@@ -1,8 +1,9 @@
 import "./style.css";
+
+import Player from "./player";
+import GameBoard from "./gameboard";
 import Ship from "./ship";
+import Game from "./game";
 
-const newShip = Ship();
-
-console.log(newShip);
-
-export default newShip;
+const game = Game();
+game.setUpGame();

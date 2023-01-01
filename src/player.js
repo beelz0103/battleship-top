@@ -4,7 +4,7 @@ import Ship from "./ship";
 const Player = (player) => {
   let turn;
   const hitCords = [];
-  const board = new GameBoard();
+  const board = GameBoard();
   const carrier = Ship("CV");
   const battleShip = Ship("BB");
   const cruiser = Ship("CA");
@@ -55,7 +55,7 @@ const Player = (player) => {
     }
   };
 
-  return { getTurn, changeTurn, attack, allShips, board };
+  return { getTurn, changeTurn, attack, allShips, board, player };
 };
 
 export default Player;
