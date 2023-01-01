@@ -1,3 +1,8 @@
 import "./style.css";
+import Ship from "./ship";
 
-console.log("hi");
+const newShip = Ship();
+
+console.log(newShip);
+
+export default newShip;
