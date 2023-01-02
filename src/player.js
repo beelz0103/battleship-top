@@ -8,18 +8,28 @@ const Player = (player) => {
 
   if (player === "player") {
     turn = true;
-    board.placeShip(carrier, 1, "horizontal");
-    board.placeShip(battleShip, 10, "vertical");
-    board.placeShip(cruiser, 23, "horizontal");
-    board.placeShip(submarine, 44, "vertical");
-    board.placeShip(destroyer, 95, "horizontal");
+    const carrier = board.allShips[0];
+    const battleShip = board.allShips[1];
+    const cruiser = board.allShips[2];
+    const submarine = board.allShips[3];
+    const destroyer = board.allShips[4];
+    board.placeShip(carrier, 1, "vertical");
+    board.placeShip(battleShip, 3, "vertical");
+    board.placeShip(cruiser, 5, "vertical");
+    board.placeShip(submarine, 7, "vertical");
+    board.placeShip(destroyer, 9, "vertical");
   } else {
     turn = false;
-    board.placeShip(carrier, 4, "vertical");
-    board.placeShip(battleShip, 35, "horizontal");
-    board.placeShip(cruiser, 21, "vertical");
-    board.placeShip(submarine, 56, "horizontal");
-    board.placeShip(destroyer, 55, "vertical");
+    const carrier = board.allShips[0];
+    const battleShip = board.allShips[1];
+    const cruiser = board.allShips[2];
+    const submarine = board.allShips[3];
+    const destroyer = board.allShips[4];
+    board.placeShip(carrier, 1, "vertical");
+    board.placeShip(battleShip, 3, "vertical");
+    board.placeShip(cruiser, 5, "vertical");
+    board.placeShip(submarine, 7, "vertical");
+    board.placeShip(destroyer, 9, "vertical");
   }
 
   const getTurn = () => turn;
@@ -36,20 +46,20 @@ const Player = (player) => {
 
   const attack = (opponent, cord = null) => {
     if (player === "player") {
-      opponent.board.recieveAttack(opponent.allShips, cord);
+      opponent.board.recieveAttack(cord);
       hitCords.push(cord);
     } else {
       const cord = getRandomInt(1, 101);
       if (hitCords.includes(cord)) {
         attack(opponent, null);
       } else {
-        opponent.board.recieveAttack(opponent.allShips, cord);
+        opponent.board.recieveAttack(cord);
         hitCords.push(cord);
       }
     }
   };
 
-  return { getTurn, changeTurn, attack, allShips, board, player };
+  return { getTurn, changeTurn, attack, board, player };
 };
 
 export default Player;
