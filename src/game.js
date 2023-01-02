@@ -3,11 +3,33 @@ import GameBoard from "./gameboard";
 import Ship from "./ship";
 
 const Game = () => {
+  let currentPlayer;
+  let currentOpponent;
+
   const setUpGame = () => {
-    const player = Player("player");
-    const computer = Player("computer");
-    GameDom().renderBoard(player);
-    GameDom().renderBoard(computer);
+    currentPlayer = Player("player");
+    currentOpponent = Player("computer");
+    GameDom().renderBoard(currentPlayer);
+    GameDom().renderBoard(currentOpponent);
+  };
+
+  const gameOver = () => {
+    if (currentOpponent.board.allSunk()) {
+      return true;
+    }
+    return false;
+  };
+
+  const changeTurn = () => {
+    const temp = currentPlayer;
+    currentPlayer = currentOpponent;
+    currentOpponent = temp;
+  };
+
+  const winner = () => {
+    if (gameOver()) {
+      return currentPlayer;
+    }
   };
 
   return { setUpGame };
@@ -31,7 +53,14 @@ const GameDom = () => {
     body.appendChild(board);
   };
 
-  return { renderBoard };
+  const toggleClick = (player, opponent) => {
+    document.getElementById(player.player).style.pointerEvents = "none";
+    document.getElementById(opponent.player).style.pointerEvents = "auto";
+  };
+
+  const getMove = () => {};
+
+  return { renderBoard, toggleClick };
 };
 
 export default Game;

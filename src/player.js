@@ -5,12 +5,6 @@ const Player = (player) => {
   let turn;
   const hitCords = [];
   const board = GameBoard();
-  const carrier = Ship("CV");
-  const battleShip = Ship("BB");
-  const cruiser = Ship("CA");
-  const submarine = Ship("SS");
-  const destroyer = Ship("DD");
-  const allShips = [carrier, battleShip, cruiser, submarine, destroyer];
 
   if (player === "player") {
     turn = true;

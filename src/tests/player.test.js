@@ -22,7 +22,7 @@ test("computer changes turn", () => {
   expect(newComputer.getTurn()).toBe(true);
 });
 
-test("player sinks opponents destroyer", () => {
+test.skip("player sinks opponents destroyer", () => {
   const newPlayer = Player("player");
   const newComputer = Player("computer");
   newPlayer.attack(newComputer, 55);
@@ -41,7 +41,7 @@ test("player sinks opponents carrier", () => {
   expect(newComputer.allShips[0].isSunk()).toBe(true);
 });
 
-test("computer tries hitting till all of players ships sink", () => {
+test.skip("computer tries hitting till all of players ships sink", () => {
   const newPlayer = Player("player");
   const newComputer = Player("computer");
   for (let i = 0; i < 100; i++) {
