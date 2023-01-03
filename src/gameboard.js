@@ -1,28 +1,27 @@
 import Ship from "./ship";
+import {
+  circumIndicesHelper,
+  lastDigit,
+  roundUpNearest10,
+  isShip,
+  increment,
+} from "./helper";
 
 const GameBoard = () => {
   const gameBoard = [];
+  const hitCords = [];
+  const turn = 0;
+  const getTruns = () => turn;
+  for (let i = 1; i <= 100; i += 1) {
+    gameBoard.push(i);
+  }
+
   const carrier = Ship("CV");
   const battleShip = Ship("BB");
   const cruiser = Ship("CA");
   const submarine = Ship("SS");
   const destroyer = Ship("DD");
   const allShips = [carrier, battleShip, cruiser, submarine, destroyer];
-
-  for (let i = 1; i <= 100; i += 1) {
-    gameBoard.push("water");
-  }
-
-  function roundUpNearest10(num) {
-    return Math.ceil(num / 10) * 10;
-  }
-
-  function lastDigit(num) {
-    if (num % 10 === 0) {
-      return 10;
-    }
-    return num % 10;
-  }
 
   const outsideBoard = (ship, startCord, position) => {
     if (
@@ -36,19 +35,12 @@ const GameBoard = () => {
     return false;
   };
 
-  const checkForSymbol = (value) => {
-    const symbols = ["CV", "BB", "CA", "SS", "DD"];
-    if (symbols.includes(value)) {
-      return true;
-    }
-    return false;
-  };
-
+  // returns true if a surrounding cordinate is a ship cordinate
   const checkCircumference = (index) => {
     const circumIndices = circumIndicesHelper(index);
     let i = 0;
     while (i < circumIndices.length) {
-      if (checkForSymbol(gameBoard[circumIndices[i]])) {
+      if (isShip(gameBoard[circumIndices[i]])) {
         return true;
       }
       i += 1;
@@ -58,7 +50,6 @@ const GameBoard = () => {
 
   const overlaps = (ship, startCord, position) => {
     const stepUpValue = increment(position);
-
     let i = 0;
     let j = startCord - 1;
     while (i < ship.getLength()) {
@@ -68,17 +59,7 @@ const GameBoard = () => {
       i += 1;
       j += stepUpValue;
     }
-
     return false;
-  };
-
-  const increment = (position) => {
-    if (position === "horizontal") {
-      return 1;
-    }
-    if (position === "vertical") {
-      return 10;
-    }
   };
 
   const canPlaceShip = (ship, startCord, position) => {
@@ -93,8 +74,8 @@ const GameBoard = () => {
 
   const placeShip = (ship, startCord, position) => {
     const shipCords = [];
+
     if (canPlaceShip(ship, startCord, position)) {
-      ship.deploy();
       const stepUpValue = increment(position);
       let i = 0;
       let j = startCord - 1;
@@ -104,9 +85,12 @@ const GameBoard = () => {
         i += 1;
         j += stepUpValue;
       }
+
+      ship.deploy();
       ship.setCords(shipCords);
-      return ship.isDeployed(shipCords);
+      return ship.isDeployed();
     }
+
     ship.couldNotDeploy();
     return ship.isDeployed();
   };
@@ -121,38 +105,28 @@ const GameBoard = () => {
     return getShip;
   };
 
-  const hitCords = [];
-
-  const hitDiagonal = (cordi) => {
-    const onlyDiagoanl = (value) => {
-      const exlude = [
-        cordi - 1,
-        cordi + 1 - 1,
-        cordi - 1 - 1,
-        cordi + 10 - 1,
-        cordi - 10 - 1,
-      ];
-      if (exlude.includes(value)) {
-        return false;
-      }
-      return true;
-    };
-    let possibleCords = circumIndicesHelper(cordi - 1);
-    possibleCords = possibleCords.filter((value) => onlyDiagoanl(value));
-    possibleCords.forEach((value) => {
-      gameBoard[value] = "hit";
-      if (!hitCords.includes(value + 1)) {
-        hitCords.push(value + 1);
-      }
-    });
-    return possibleCords.map((value) => value + 1);
-  };
-
   const alreadyHit = (cord) => {
     if (hitCords.includes(cord)) {
       return true;
     }
     return false;
+  };
+
+  function getOnlyDiagonalCords(onBoardCord) {
+    const cord = onBoardCord - 1;
+    const exlude = [cord, cord + 1, cord - 1, cord + 10, cord - 10];
+    return circumIndicesHelper(cord).filter((value) => !exlude.includes(value));
+  }
+
+  const hitDiagonal = (cord) => {
+    const possibleCords = getOnlyDiagonalCords(cord);
+    possibleCords.forEach((value) => {
+      gameBoard[value] = "h";
+      if (!alreadyHit(value + 1)) {
+        hitCords.push(value + 1);
+      }
+    });
+    return possibleCords.map((value) => value + 1);
   };
 
   const allShipsDeployed = () => {
@@ -164,51 +138,78 @@ const GameBoard = () => {
     return true;
   };
 
-  let turn = 0;
+  function getAllAdjacentCords(ship) {
+    return ship.getCords().reduce((adjacentArray, shipCord) => {
+      circumIndicesHelper(shipCord - 1).forEach((adjCord) => {
+        if (!adjacentArray.includes(adjCord)) adjacentArray.push(adjCord);
+      });
+      return adjacentArray;
+    }, []);
+  }
 
   const hitShipAdjacent = (ship) => {
-    const shipsCords = ship.getCords();
-    const adjCords = [];
-    shipsCords.forEach((value) => {
-      const diag = circumIndicesHelper(value - 1);
-      diag.forEach((value) => {
-        if (!adjCords.includes(value)) adjCords.push(value);
+    if (ship.isSunk()) {
+      const remainingCords = getAllAdjacentCords(ship)
+        .map((value) => value + 1)
+        .filter((value) => !hitCords.includes(value));
+
+      remainingCords.forEach((cord) => {
+        gameBoard[cord - 1] = "h";
       });
-    });
 
-    const remainingCords = adjCords
-      .map((value) => value + 1)
-      .filter((value) => !hitCords.includes(value));
-
-    remainingCords.forEach((val) => {
-      gameBoard[val - 1] = "hit";
-    });
-    return remainingCords;
+      return remainingCords;
+    }
+    return null;
   };
 
+  let initiated;
+
+  const getInitiated = () => initiated;
+
+  const initiateBoard = () => {
+    if (allShipsDeployed()) {
+      initiated = true;
+    } else {
+      initiated = false;
+    }
+  };
+
+  function noAttack() {
+    return "h";
+  }
+
+  function updateShip(hitTarget, cord) {
+    const ship = getShipFromSymbol(hitTarget);
+    ship.hit();
+    hitDiagonal(cord);
+    hitShipAdjacent(ship);
+  }
+
+  function attackShip(cord) {
+    hitCords.push(cord);
+    const hitTarget = gameBoard[cord - 1];
+    gameBoard[cord - 1] = "h";
+    updateShip(hitTarget, cord);
+    return hitTarget;
+  }
+
+  function attackWater(cord) {
+    hitCords.push(cord);
+    const hitTarget = gameBoard[cord - 1];
+    gameBoard[cord - 1] = "h";
+    return hitTarget;
+  }
+
   const recieveAttack = (cord) => {
-    if (turn === 0) {
-      if (allShipsDeployed() === false) {
-        return "some ships werent able to deploy";
-      }
+    let hitTarget;
+    if (alreadyHit(cord)) {
+      hitTarget = noAttack();
+    } else if (isShip(gameBoard[cord - 1])) {
+      hitTarget = attackShip(cord);
+    } else {
+      hitTarget = attackWater(cord);
     }
-    if (!alreadyHit(cord)) {
-      turn = 1;
-      hitCords.push(cord);
-      if (checkForSymbol(gameBoard[cord - 1])) {
-        const ship = getShipFromSymbol(gameBoard[cord - 1]);
-        ship.hit();
-        gameBoard[cord - 1] = "hit";
-        hitDiagonal(cord);
-        if (ship.isSunk()) {
-          hitShipAdjacent(ship);
-        }
-        return ship;
-      }
-      gameBoard[cord - 1] = "hit";
-      return gameBoard[cord - 1];
-    }
-    return gameBoard[cord - 1];
+    return hitTarget;
   };
 
   const allSunk = () => {
@@ -220,94 +221,26 @@ const GameBoard = () => {
     return true;
   };
 
+  const getHitCords = () => hitCords;
+
   return {
     canPlaceShip,
     gameBoard,
     placeShip,
     recieveAttack,
     allSunk,
-    checkForSymbol,
+    isShip,
     allShips,
     allShipsDeployed,
     hitCords,
     checkCircumference,
     hitDiagonal,
     hitShipAdjacent,
+    getHitCords,
+    getTruns,
+    initiateBoard,
+    getInitiated,
   };
 };
 
 export default GameBoard;
-
-const circumIndicesHelper = (index) => {
-  const leftColumn = [10, 20, 30, 40, 50, 60, 70, 80];
-  const rightColumn = [19, 29, 39, 49, 59, 69, 79, 89];
-  let circumIndices = [];
-  switch (true) {
-    case index === 0:
-      circumIndices = [index, index + 1, index + 10, index + 11];
-      break;
-    case index === 9:
-      circumIndices = [index, index - 1, index + 9, index + 10];
-      break;
-    case index === 90:
-      circumIndices = [index, index - 10, index + 1, index - 9];
-      break;
-    case index === 99:
-      circumIndices = [index, index - 1, index - 10, index - 11];
-      break;
-    case index > 0 && index < 9:
-      circumIndices = [
-        index,
-        index + 1,
-        index + 10,
-        index + 11,
-        index + 9,
-        index - 1,
-      ];
-      break;
-    case index > 90 && index < 99:
-      circumIndices = [
-        index,
-        index - 11,
-        index - 10,
-        index - 9,
-        index + 1,
-        index - 1,
-      ];
-      break;
-    case leftColumn.includes(index):
-      circumIndices = [
-        index,
-        index - 10,
-        index - 9,
-        index + 1,
-        index + 10,
-        index + 11,
-      ];
-      break;
-    case rightColumn.includes(index):
-      circumIndices = [
-        index,
-        index - 11,
-        index - 10,
-        index - 1,
-        index + 9,
-        index + 10,
-      ];
-      break;
-
-    default:
-      circumIndices = [
-        index,
-        index + 1,
-        index - 1,
-        index + 10,
-        index - 10,
-        index + 11,
-        index - 11,
-        index - 9,
-        index + 9,
-      ];
-  }
-  return circumIndices;
-};

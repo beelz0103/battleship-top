@@ -69,7 +69,7 @@ test("hit a ship", () => {
   const battleShip = board.allShips[1];
   board.placeShip(battleShip, 1, "vertical");
   board.placeShip(carrier, 3, "vertical");
-  expect(board.recieveAttack(1)).toBe(battleShip);
+  expect(board.recieveAttack(1)).toBe("BB");
 });
 
 test("hit a ship", () => {
@@ -78,7 +78,7 @@ test("hit a ship", () => {
   const battleShip = board.allShips[1];
   board.placeShip(battleShip, 1, "vertical");
   board.placeShip(carrier, 3, "vertical");
-  expect(board.recieveAttack(13)).toBe(carrier);
+  expect(board.recieveAttack(13)).toBe("CV");
 });
 
 test("miss ship", () => {
@@ -87,7 +87,7 @@ test("miss ship", () => {
   const battleShip = board.allShips[1];
   board.placeShip(battleShip, 1, "vertical");
   board.placeShip(carrier, 3, "vertical");
-  expect(board.recieveAttack(2)).toBe("hit");
+  expect(board.recieveAttack(2)).toBe(2);
 });
 
 test("miss ship", () => {
@@ -96,7 +96,7 @@ test("miss ship", () => {
   const battleShip = board.allShips[1];
   board.placeShip(battleShip, 1, "vertical");
   board.placeShip(carrier, 3, "vertical");
-  expect(board.recieveAttack(100)).toBe("hit");
+  expect(board.recieveAttack(100)).toBe(100);
 });
 
 test("hit same cord twice", () => {
@@ -106,7 +106,7 @@ test("hit same cord twice", () => {
   board.placeShip(battleShip, 1, "vertical");
   board.placeShip(carrier, 3, "vertical");
   board.recieveAttack(1);
-  expect(board.recieveAttack(1)).toBe("hit");
+  expect(board.recieveAttack(1)).toBe("h");
 });
 
 test("hit same cord twice", () => {
@@ -116,7 +116,7 @@ test("hit same cord twice", () => {
   board.placeShip(battleShip, 1, "vertical");
   board.placeShip(carrier, 3, "vertical");
   board.recieveAttack(100);
-  expect(board.recieveAttack(100)).toBe("hit");
+  expect(board.recieveAttack(100)).toBe("h");
 });
 
 test("all ships deployed", () => {
@@ -207,4 +207,22 @@ test("hit ships adjacent", () => {
   board.recieveAttack(79);
   board.recieveAttack(75);
   expect(board.hitShipAdjacent(carrier)).toEqual([74, 80]);
+});
+
+test("initiates board", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  board.placeShip(carrier, 75, "horizontal");
+  board.initiateBoard();
+  expect(board.getInitiated()).toBe(true);
+});
+
+test("initiates board", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  const battleShip = board.allShips[1];
+  board.placeShip(carrier, 75, "horizontal");
+  board.placeShip(battleShip, 75, "horizontal");
+  board.initiateBoard();
+  expect(board.getInitiated()).toBe(false);
 });
