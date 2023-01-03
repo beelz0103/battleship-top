@@ -146,7 +146,7 @@ test("all ships not sunk", () => {
   board.placeShip(cruiser, 5, "vertical");
   board.placeShip(submarine, 7, "vertical");
   board.placeShip(destroyer, 9, "vertical");
-  expect(board.allSunk()).toBe(false);
+  expect(board.getLose()).toBe(false);
 });
 
 test("all ships sunk", () => {
@@ -165,7 +165,7 @@ test("all ships sunk", () => {
   for (let i = 0; i < 100; i += 1) {
     board.recieveAttack(i);
   }
-  expect(board.allSunk()).toBe(true);
+  expect(board.getLose()).toBe(true);
 });
 
 test("checks if circumference function wraps properly", () => {

@@ -18,4 +18,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: inherit;
+}
+
+.ship {
+  background-color: lightpink;
+}
+
+.water {
+  background-color: lightskyblue;
 }

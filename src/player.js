@@ -21,15 +21,15 @@ const Player = (player) => {
   } else {
     turn = false;
     const carrier = board.allShips[0];
-    const battleShip = board.allShips[1];
-    const cruiser = board.allShips[2];
-    const submarine = board.allShips[3];
-    const destroyer = board.allShips[4];
+    // const battleShip = board.allShips[1];
+    // const cruiser = board.allShips[2];
+    // const submarine = board.allShips[3];
+    // const destroyer = board.allShips[4];
     board.placeShip(carrier, 1, "vertical");
-    board.placeShip(battleShip, 3, "vertical");
-    board.placeShip(cruiser, 5, "vertical");
-    board.placeShip(submarine, 7, "vertical");
-    board.placeShip(destroyer, 9, "vertical");
+    // board.placeShip(battleShip, 3, "vertical");
+    // board.placeShip(cruiser, 5, "vertical");
+    // board.placeShip(submarine, 7, "vertical");
+    // board.placeShip(destroyer, 9, "vertical");
   }
 
   const getTurn = () => turn;
@@ -56,27 +56,36 @@ const Player = (player) => {
     }
     return arr;
   }
-  let numberOfTurns = 0;
+
+  const numberOfTurns = 0;
   const getTruns = () => numberOfTurns;
 
-  const attack = (opponent, cord = null) => {
-    if (!board.allShipsDeployed()) {
-      return;
-    }
-    if (player === "player") {
-      const retVal = opponent.board.recieveAttack(cord);
-      return retVal;
-    }
-    if (opponent.board.allSunk()) {
-      return;
-    }
-    numberOfTurns += 1;
-    cord = possibleMove[Math.floor(Math.random() * possibleMove.length)];
-    const retVal = opponent.board.recieveAttack(cord);
+  function playerAttacks(opponent, cord) {
+    const hitCord = opponent.board.recieveAttack(cord);
+    return hitCord;
+  }
+
+  function getRandom(array) {
+    return array[Math.floor(Math.random() * possibleMove.length)];
+  }
+
+  function computerAttacks(opponent) {
+    const cord = getRandom(possibleMove);
+    const hitCord = opponent.board.recieveAttack(cord);
     opponent.board.hitCords.forEach((value) => {
       removeItemOnce(possibleMove, value);
     });
-    return retVal;
+    return hitCord;
+  }
+
+  const attack = (opponent, cord = null) => {
+    let hitCord;
+    if (player === "player") {
+      hitCord = playerAttacks(opponent, cord);
+    } else {
+      hitCord = computerAttacks(opponent);
+    }
+    return hitCord;
   };
 
   return { getTurn, changeTurn, attack, board, player, hitCords, getTruns };

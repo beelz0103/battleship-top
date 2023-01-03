@@ -10,8 +10,10 @@ import {
 const GameBoard = () => {
   const gameBoard = [];
   const hitCords = [];
+  let lose = false;
   const turn = 0;
   const getTruns = () => turn;
+  const getLose = () => lose;
   for (let i = 1; i <= 100; i += 1) {
     gameBoard.push(i);
   }
@@ -121,7 +123,7 @@ const GameBoard = () => {
   const hitDiagonal = (cord) => {
     const possibleCords = getOnlyDiagonalCords(cord);
     possibleCords.forEach((value) => {
-      gameBoard[value] = "h";
+      gameBoard[value] = "water";
       if (!alreadyHit(value + 1)) {
         hitCords.push(value + 1);
       }
@@ -154,7 +156,7 @@ const GameBoard = () => {
         .filter((value) => !hitCords.includes(value));
 
       remainingCords.forEach((cord) => {
-        gameBoard[cord - 1] = "h";
+        gameBoard[cord - 1] = "water";
       });
 
       return remainingCords;
@@ -190,13 +192,14 @@ const GameBoard = () => {
     const hitTarget = gameBoard[cord - 1];
     gameBoard[cord - 1] = "h";
     updateShip(hitTarget, cord);
+    allSunk();
     return hitTarget;
   }
 
   function attackWater(cord) {
     hitCords.push(cord);
     const hitTarget = gameBoard[cord - 1];
-    gameBoard[cord - 1] = "h";
+    gameBoard[cord - 1] = "water";
     return hitTarget;
   }
 
@@ -214,10 +217,11 @@ const GameBoard = () => {
 
   const allSunk = () => {
     for (let i = 0; i < allShips.length; i += 1) {
-      if (allShips[i].isSunk() === false) {
+      if (allShips[i].isDeployed() && allShips[i].isSunk() === false) {
         return false;
       }
     }
+    lose = true;
     return true;
   };
 
@@ -240,6 +244,7 @@ const GameBoard = () => {
     getTruns,
     initiateBoard,
     getInitiated,
+    getLose,
   };
 };
 

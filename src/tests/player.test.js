@@ -49,3 +49,9 @@ test("computer tries hitting till all of players ships sink", () => {
   }
   expect(newPlayer.board.allSunk()).toBe(true);
 });
+
+test("player attack return value is same as board attack return value", () => {
+  const newPlayer = Player("player");
+  const newComputer = Player("computer");
+  expect(newPlayer.attack(newComputer, 1)).toBe("CV");
+});
