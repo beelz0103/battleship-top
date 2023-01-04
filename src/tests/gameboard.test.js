@@ -226,3 +226,116 @@ test("initiates board", () => {
   board.initiateBoard();
   expect(board.getInitiated()).toBe(false);
 });
+
+test("move ship from one one cord to another", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  const battleShip = board.allShips[1];
+  board.placeShip(carrier, 75, "horizontal");
+  board.placeShip(battleShip, 10, "vertical");
+  expect(board.moveShip(battleShip, 55, "horizontal")).toEqual(true);
+});
+
+test("move ship from one one cord to another 2", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  const battleShip = board.allShips[1];
+  board.placeShip(carrier, 75, "horizontal");
+  board.placeShip(battleShip, 10, "vertical");
+  expect(board.moveShip(carrier, 22, "horizontal")).toEqual(true);
+});
+
+test("check if ship was removed from the original location", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  const battleShip = board.allShips[1];
+  board.placeShip(carrier, 75, "horizontal");
+  board.placeShip(battleShip, 10, "vertical");
+  const originalCords = battleShip.getCords();
+  board.moveShip(battleShip, 55, "horizontal");
+  const originalCordsonBoardAfter = battleShip.getCords();
+  expect(originalCordsonBoardAfter).not.toEqual(originalCords);
+});
+
+test("check if ship was removed from the original location board version", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  const battleShip = board.allShips[1];
+  board.placeShip(carrier, 75, "horizontal");
+  board.placeShip(battleShip, 10, "vertical");
+  const originalCords = [];
+  board.gameBoard.forEach((value, index) => {
+    if (value === "BB") {
+      originalCords.push(index + 1);
+    }
+  });
+  board.moveShip(battleShip, 55, "horizontal");
+  const originalCordsonBoardAfter = [];
+  board.gameBoard.forEach((value, index) => {
+    if (value === "BB") {
+      originalCordsonBoardAfter.push(index + 1);
+    }
+  });
+  expect(originalCordsonBoardAfter).not.toEqual(originalCords);
+});
+
+test("fail move ship from one one cord to another", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  const battleShip = board.allShips[1];
+  const cruiser = board.allShips[2];
+  const submarine = board.allShips[3];
+  const destroyer = board.allShips[4];
+  board.placeShip(carrier, 1, "vertical");
+  board.placeShip(battleShip, 3, "vertical");
+  board.placeShip(cruiser, 5, "vertical");
+  board.placeShip(submarine, 7, "vertical");
+  board.placeShip(destroyer, 9, "vertical");
+  expect(board.moveShip(carrier, 22, "horizontal")).toEqual("failed");
+});
+
+test("fail move ship from one one cord to another", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  const battleShip = board.allShips[1];
+  const cruiser = board.allShips[2];
+  const submarine = board.allShips[3];
+  const destroyer = board.allShips[4];
+  board.placeShip(carrier, 1, "vertical");
+  const originalCords = carrier.getCords();
+  board.placeShip(battleShip, 3, "vertical");
+  board.placeShip(cruiser, 5, "vertical");
+  board.placeShip(submarine, 7, "vertical");
+  board.placeShip(destroyer, 9, "vertical");
+  board.moveShip(carrier, 22, "horizontal");
+  const originalCordsAfter = carrier.getCords();
+  expect(originalCordsAfter).toEqual(originalCords);
+});
+
+test("fail move ship from one one cord to another", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  const battleShip = board.allShips[1];
+  const cruiser = board.allShips[2];
+  const submarine = board.allShips[3];
+  const destroyer = board.allShips[4];
+  board.placeShip(carrier, 1, "vertical");
+  const originalCords = [];
+  board.gameBoard.forEach((value, index) => {
+    if (value === "CV") {
+      originalCords.push(index + 1);
+    }
+  });
+  board.placeShip(battleShip, 3, "vertical");
+  board.placeShip(cruiser, 5, "vertical");
+  board.placeShip(submarine, 7, "vertical");
+  board.placeShip(destroyer, 9, "vertical");
+  board.moveShip(carrier, 22, "horizontal");
+  const originalCordsAfter = [];
+  board.gameBoard.forEach((value, index) => {
+    if (value === "CV") {
+      originalCordsAfter.push(index + 1);
+    }
+  });
+  expect(originalCordsAfter).toEqual(originalCords);
+});

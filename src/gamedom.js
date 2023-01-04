@@ -1,3 +1,5 @@
+import { isShip } from "./helper";
+
 const GameDom = () => {
   const renderBoard = (PlayerObject) => {
     const body = document.querySelector("body");
@@ -12,6 +14,17 @@ const GameDom = () => {
       board.appendChild(squareDiv);
     }
     body.appendChild(board);
+  };
+
+  const showPlayerShips = (currentPlayer) => {
+    const squareDivs = document.querySelectorAll(
+      `#${currentPlayer.player} div`
+    );
+    currentPlayer.board.gameBoard.forEach((value, index) => {
+      if (isShip(value)) {
+        squareDivs[index].style.backgroundColor = "#839b97";
+      }
+    });
   };
 
   const setClickEvent = (opponent, getMove) => {
@@ -62,6 +75,7 @@ const GameDom = () => {
     setClickEvent,
     disablePointerEvent,
     updateBoard,
+    showPlayerShips,
   };
 };
 

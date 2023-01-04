@@ -10,14 +10,14 @@ const Player = (player) => {
     turn = true;
     const carrier = board.allShips[0];
     const battleShip = board.allShips[1];
-    const cruiser = board.allShips[2];
-    const submarine = board.allShips[3];
-    const destroyer = board.allShips[4];
+    // const cruiser = board.allShips[2];
+    // const submarine = board.allShips[3];
+    // const destroyer = board.allShips[4];
     board.placeShip(carrier, 15, "horizontal");
     board.placeShip(battleShip, 55, "horizontal");
-    board.placeShip(cruiser, 13, "vertical");
-    board.placeShip(submarine, 72, "vertical");
-    board.placeShip(destroyer, 85, "vertical");
+    // board.placeShip(cruiser, 13, "vertical");
+    // board.placeShip(submarine, 72, "vertical");
+    // board.placeShip(destroyer, 85, "vertical");
   } else {
     turn = false;
     const carrier = board.allShips[0];
