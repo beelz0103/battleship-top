@@ -51,6 +51,7 @@ const GameDom = () => {
   };
 
   const disableHitCell = (opponent) => {
+    if (opponent.player === "player") return;
     const gridCells = document.querySelectorAll(`#${opponent.player} div`);
     opponent.board.gameBoard.forEach((value, index) => {
       if (value === "h" || value === "water") {
@@ -72,17 +73,18 @@ const GameDom = () => {
     });
   };
 
+  const disablePointerEvent = (cell) => {
+    cell.style.pointerEvents = "none";
+  };
+
   const disableAllPointerEvents = () => {
-    const squares = document.querySelectorAll(".squareDiv");
-    squares.forEach((square) => {
-      square.style.pointerEvents = "none";
-    });
+    const gridCells = document.querySelectorAll(".squareDiv");
+    gridCells.forEach(disablePointerEvent);
   };
 
   const Narrator = (message) => {
     const narrator = document.querySelector(".narrator");
     narrator.textContent = message;
-    console.log(message);
   };
 
   const addMoveListeners = (Player, moveShip) => {
@@ -100,6 +102,26 @@ const GameDom = () => {
     startButton.addEventListener("click", startGame);
   };
 
+  const disableStartButton = (startGame) => {
+    const startButton = document.querySelector("#startGame");
+    startButton.removeEventListener("click", startGame);
+  };
+
+  const enableRestartButton = (restartGame) => {
+    const restartButton = document.querySelector("#restartGame");
+    restartButton.addEventListener("click", restartGame);
+  };
+
+  const disableRestartButton = (restartGame) => {
+    const restartButton = document.querySelector("#restartGame");
+    restartButton.removeEventListener("click", restartGame);
+  };
+
+  const unRenderBoards = () => {
+    const mainContainer = document.querySelector(".board-container");
+    mainContainer.textContent = "";
+  };
+
   return {
     Narrator,
     disableAllPointerEvents,
@@ -112,6 +134,10 @@ const GameDom = () => {
     addMoveListeners,
     removeMoveListeners,
     enableStartButton,
+    disableStartButton,
+    enableRestartButton,
+    disableRestartButton,
+    unRenderBoards,
   };
 };
 

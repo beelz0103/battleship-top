@@ -21,6 +21,7 @@ const Game = () => {
     gameDom.Narrator(`${currentPlayer.player}'s move`);
     gameDom.addAttackListeners(currentOpponent, getMove);
     gameDom.removeMoveListeners(currentPlayer, moveShip);
+    gameDom.disableStartButton(startGame);
   };
 
   const play = () => {
@@ -85,73 +86,71 @@ const Game = () => {
     moveShipHelper(parseInt(e.target.id));
   };
 
-  const changeTurn = () => {
+  const runGameLoop = (cord = null) => {
+    if (currentPlayer.player === "player") {
+      executePlayerAttack(cord);
+    } else {
+      executeComputerAttack(cord);
+    }
+  };
+
+  const toggleTurn = () => {
     const temp = currentPlayer;
     currentPlayer = currentOpponent;
     currentOpponent = temp;
     gameDom.Narrator(`${currentPlayer.player}'s move`);
+  };
+
+  const turnManager = () => {
     if (currentPlayer.player !== "player") {
-      playGame();
+      runGameLoop();
+    } else {
+      gameDom.toggleClick(currentPlayer, currentOpponent);
     }
-    gameDom.toggleClick(currentPlayer, currentOpponent);
+  };
+
+  const advanceGame = (hitTarget) => {
+    if (!isShip(hitTarget)) toggleTurn();
+    turnManager();
   };
 
   const getMove = (event) => {
     const cord = parseInt(event.target.id, 10);
-    playGame(cord);
-  };
-
-  const playGame = (cord = null) => {
-    if (currentPlayer.player === "player") {
-      playerLogic(cord);
-    } else {
-      computerLogic(cord);
-    }
+    runGameLoop(cord);
   };
 
   const concludeGame = () => {
-    gameDom.disableAllPointerEvents();
-    console.log("Game Over", currentPlayer, "WON");
+    if (currentOpponent.board.getLose()) {
+      gameDom.Narrator(`${currentPlayer.player}'s won`);
+      gameDom.disableAllPointerEvents();
+      gameDom.enableRestartButton(restartGame);
+    }
   };
 
-  const playerLogic = (cord) => {
-    const hitTarget = currentPlayer.attack(currentOpponent, cord);
+  const updateGameState = () => {
     gameDom.updateBoard(currentOpponent);
     gameDom.disableHitCell(currentOpponent);
-    if (currentOpponent.board.getLose()) {
-      concludeGame();
-      return;
-    }
-    if (!isShip(hitTarget)) {
-      changeTurn();
-    }
+    concludeGame();
   };
 
-  const computerLogic = (cord) => {
+  const executePlayerAttack = (cord) => {
     const hitTarget = currentPlayer.attack(currentOpponent, cord);
-    gameDom.updateBoard(currentOpponent);
-    if (winner() === currentPlayer) {
-      console.log(currentPlayer, "WONNNNNNNN");
-      return;
-    }
-    if (!isShip(hitTarget)) {
-      changeTurn();
-    } else {
-      playGame();
-    }
+    updateGameState();
+    advanceGame(hitTarget);
   };
 
-  const gameOver = () => {
-    if (currentOpponent.board.allSunk()) {
-      return true;
-    }
-    return false;
+  const executeComputerAttack = (cord = null) => {
+    const hitTarget = currentPlayer.attack(currentOpponent, cord);
+    updateGameState();
+    advanceGame(hitTarget);
   };
 
-  const winner = () => {
-    if (gameOver()) {
-      return currentPlayer;
-    }
+  const restartGame = () => {
+    currentPlayer = null;
+    currentOpponent = null;
+    gameDom.unRenderBoards();
+    play();
+    gameDom.disableRestartButton(restartGame);
   };
 
   return { setUpGame, play };
