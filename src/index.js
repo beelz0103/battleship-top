@@ -6,4 +6,4 @@ import Ship from "./ship";
 import Game from "./game";
 
 const game = Game();
-game.startGame();
+game.play();

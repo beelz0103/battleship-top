@@ -1,37 +1,48 @@
 import { isShip } from "./helper";
 
 const GameDom = () => {
-  const renderBoard = (PlayerObject) => {
-    const body = document.querySelector("body");
-    const board = document.createElement("div");
-    board.id = PlayerObject.player;
-    board.classList.add("board");
+  const createDiv = (id, className) => {
+    const div = document.createElement("div");
+    div.classList.add(className);
+    div.setAttribute("id", id);
+    return div;
+  };
 
+  const populateBoard = (board) => {
     for (let i = 0; i < 100; i += 1) {
       const squareDiv = document.createElement("div");
       squareDiv.id = i + 1;
       squareDiv.classList.add("squareDiv");
       board.appendChild(squareDiv);
     }
-    body.appendChild(board);
   };
 
-  const showPlayerShips = (currentPlayer) => {
-    const squareDivs = document.querySelectorAll(
-      `#${currentPlayer.player} div`
-    );
-    currentPlayer.board.gameBoard.forEach((value, index) => {
-      if (isShip(value)) {
-        squareDivs[index].style.backgroundColor = "#839b97";
-      }
-    });
+  const renderBoard = (Player) => {
+    const { player } = Player;
+    const mainContainer = document.querySelector(".board-container");
+    const subContainer = createDiv(`${player}-sub-container`, "sub-container");
+    const board = createDiv(player, "board");
+    const shipContainer = createDiv(`${player}-ships`, "board");
+    populateBoard(board);
+    subContainer.appendChild(board);
+    subContainer.appendChild(shipContainer);
+    mainContainer.appendChild(subContainer);
   };
 
-  const setClickEvent = (opponent, getMove) => {
-    const opponentBoard = document.querySelectorAll(`#${opponent.player} div`);
-    opponentBoard.forEach((squareDiv) => {
-      squareDiv.addEventListener("click", getMove);
-    });
+  const changeBgColor = (target, color) => {
+    target.style.backgroundColor = color;
+  };
+
+  const showPlayerShips = (Player) => {
+    const gridCells = document.querySelectorAll(`#${Player.player} div`);
+    const placeCord = (cord) => changeBgColor(gridCells[cord - 1], "#839b97");
+    const placeShip = (ship) => ship.getCords().forEach(placeCord);
+    Player.board.allShips.forEach(placeShip);
+  };
+
+  const addAttackListeners = (opponent, getMove) => {
+    const board = document.querySelectorAll(`#${opponent.player} div`);
+    board.forEach((cell) => cell.addEventListener("click", getMove));
   };
 
   const toggleClick = (player, opponent) => {
@@ -39,11 +50,11 @@ const GameDom = () => {
     document.getElementById(opponent.player).style.pointerEvents = "auto";
   };
 
-  const disablePointerEvent = (opponent) => {
-    const squareDivs = document.querySelectorAll(`#${opponent.player} div`);
+  const disableHitCell = (opponent) => {
+    const gridCells = document.querySelectorAll(`#${opponent.player} div`);
     opponent.board.gameBoard.forEach((value, index) => {
       if (value === "h" || value === "water") {
-        squareDivs[index].style.pointerEvents = "none";
+        gridCells[index].style.pointerEvents = "none";
       }
     });
   };
@@ -68,14 +79,39 @@ const GameDom = () => {
     });
   };
 
+  const Narrator = (message) => {
+    const narrator = document.querySelector(".narrator");
+    narrator.textContent = message;
+    console.log(message);
+  };
+
+  const addMoveListeners = (Player, moveShip) => {
+    const board = document.querySelectorAll(`#${Player.player} div`);
+    board.forEach((cell) => cell.addEventListener("click", moveShip));
+  };
+
+  const removeMoveListeners = (Player, moveShip) => {
+    const board = document.querySelectorAll(`#${Player.player} div`);
+    board.forEach((cell) => cell.removeEventListener("click", moveShip));
+  };
+
+  const enableStartButton = (startGame) => {
+    const startButton = document.querySelector("#startGame");
+    startButton.addEventListener("click", startGame);
+  };
+
   return {
+    Narrator,
     disableAllPointerEvents,
     toggleClick,
     renderBoard,
-    setClickEvent,
-    disablePointerEvent,
+    addAttackListeners,
+    disableHitCell,
     updateBoard,
     showPlayerShips,
+    addMoveListeners,
+    removeMoveListeners,
+    enableStartButton,
   };
 };
 

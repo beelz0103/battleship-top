@@ -1,8 +1,7 @@
 import Player from "./player";
 import { isShip } from "./helper";
 import GameDom from "./gamedom";
-// import GameBoard from "./gameboard";
-// import Ship from "./ship";
+
 const gameDom = GameDom();
 
 const Game = () => {
@@ -15,40 +14,27 @@ const Game = () => {
     gameDom.renderBoard(currentPlayer);
     gameDom.showPlayerShips(currentPlayer);
     gameDom.renderBoard(currentOpponent);
-    gameDom.setClickEvent(currentOpponent, getMove);
-    gameDom.toggleClick(currentOpponent, currentPlayer);
-    setClickEvent2(currentPlayer, moveShip);
+    gameDom.addMoveListeners(currentPlayer, moveShip);
   };
 
-  document.querySelector("#startGame").addEventListener("click", startGame2);
-
-  function startGame2() {
-    gameDom.toggleClick(currentPlayer, currentOpponent);
-    removeClickEvent2(currentPlayer, moveShip);
-  }
-
-  const setClickEvent2 = (player, moveShip) => {
-    const squareDivs = document.querySelectorAll(`#${player.player} div`);
-    player.board.gameBoard.forEach((value, index) => {
-      // if (isShip(value)) {
-      squareDivs[index].addEventListener("click", moveShip);
-      // squareDivs[index].textContent = value;
-      // squareDivs[index].style.backgroundColor = "#839b97";
-      // }
-    });
+  const startGame = () => {
+    gameDom.Narrator(`${currentPlayer.player}'s move`);
+    gameDom.addAttackListeners(currentOpponent, getMove);
+    gameDom.removeMoveListeners(currentPlayer, moveShip);
   };
 
-  const removeClickEvent2 = (player, moveShip) => {
-    const squareDivs = document.querySelectorAll(`#${player.player} div`);
-    player.board.gameBoard.forEach((value, index) => {
-      squareDivs[index].removeEventListener("click", moveShip);
-    });
+  const play = () => {
+    setUpGame();
+    gameDom.Narrator("Move/Rotate Ships");
+    gameDom.enableStartButton(startGame);
   };
 
   const moveFune = (shipType) => {
     const revertStateArray = [];
     const sqDivs = document.querySelectorAll(`#player div`);
-    const ship = currentPlayer.board.getShipFromSymbol(shipType);
+    const ship = currentPlayer.board.allShips.find(
+      (shp) => shp.type === shipType
+    );
     const shipIndex = ship.getCords().map((value) => value - 1);
     let position;
     console.log(shipIndex);
@@ -74,7 +60,7 @@ const Game = () => {
         sqDivs[value].textContent = "";
         sqDivs[value].style.backgroundColor = "";
       });
-      setClickEvent2(currentPlayer, moveShip);
+      gameDom.addMoveListeners(currentPlayer, moveShip);
 
       gameDom.showPlayerShips(currentPlayer);
     };
@@ -85,13 +71,13 @@ const Game = () => {
   };
 
   const moveShipHelper = (cord) => {
-    removeClickEvent2(currentPlayer, moveShip);
+    gameDom.removeMoveListeners(currentPlayer, moveShip);
     const shipType = currentPlayer.board.gameBoard[cord - 1];
     if (isShip(shipType)) {
       moveFune(shipType);
     } else {
       console.log("this was not a ship");
-      setClickEvent2(currentPlayer, moveShip);
+      gameDom.addMoveListeners(currentPlayer, moveShip);
     }
   };
 
@@ -99,14 +85,11 @@ const Game = () => {
     moveShipHelper(parseInt(e.target.id));
   };
 
-  const startGame = () => {
-    setUpGame();
-  };
-
   const changeTurn = () => {
     const temp = currentPlayer;
     currentPlayer = currentOpponent;
     currentOpponent = temp;
+    gameDom.Narrator(`${currentPlayer.player}'s move`);
     if (currentPlayer.player !== "player") {
       playGame();
     }
@@ -114,7 +97,7 @@ const Game = () => {
   };
 
   const getMove = (event) => {
-    const cord = parseInt(event.target.id);
+    const cord = parseInt(event.target.id, 10);
     playGame(cord);
   };
 
@@ -125,6 +108,7 @@ const Game = () => {
       computerLogic(cord);
     }
   };
+
   const concludeGame = () => {
     gameDom.disableAllPointerEvents();
     console.log("Game Over", currentPlayer, "WON");
@@ -133,7 +117,7 @@ const Game = () => {
   const playerLogic = (cord) => {
     const hitTarget = currentPlayer.attack(currentOpponent, cord);
     gameDom.updateBoard(currentOpponent);
-    gameDom.disablePointerEvent(currentOpponent);
+    gameDom.disableHitCell(currentOpponent);
     if (currentOpponent.board.getLose()) {
       concludeGame();
       return;
@@ -170,7 +154,7 @@ const Game = () => {
     }
   };
 
-  return { setUpGame, startGame };
+  return { setUpGame, play };
 };
 
 export default Game;

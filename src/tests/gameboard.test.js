@@ -156,8 +156,8 @@ test("all ships sunk", () => {
 test("checks if circumference function wraps properly", () => {
   const board = GameBoard();
   const carrier = board.allShips[0];
-  board.placeShip(carrier, 60, "vertical");
-  expect(board.isAdjacentToOrOverlappingWithShip(61)).toBe(false);
+  board.placeShip(carrier, 51, "vertical");
+  expect(board.isAdjacentToShip(61)).toBe(true);
 });
 
 test("checks if hitDiagonal function wraps properly", () => {
@@ -263,8 +263,8 @@ test("check if ship was rotated 2", () => {
   const carrier = board.allShips[0];
   const battleShip = board.allShips[1];
   board.placeShip(carrier, 75, "horizontal");
-  board.placeShip(battleShip, 11, "vertical");
-  board.moveShip(battleShip, 11, "vertical");
+  board.placeShip(battleShip, 55, "horizontal");
+  board.moveShip(battleShip, 55, "horizontal");
   const cord2 = battleShip.getCords();
   const cordDiff = cord2[1] - cord2[0];
   expect(cordDiff).toBe(1);

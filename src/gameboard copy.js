@@ -37,30 +37,16 @@ const GameBoard = () => {
   };
 
   // returns true if a surrounding cordinate is a ship cordinate
-  const isAdjacentToShip = (cord) => {
+  const isAdjacentToOrOverlappingWithShip = (cord) => {
     const surroundingIndices = getSurroundingIndices(cord - 1);
     return surroundingIndices.some((index) => isShip(gameBoard[index]));
-  };
-
-  const isOverlappingWithShip = (ship, startCord, position) => {
-    const stepUpValue = increment(position);
-    let i = 0;
-    let j = startCord;
-    while (i < ship.getLength()) {
-      if (isAdjacentToShip(j)) {
-        return true;
-      }
-      i += 1;
-      j += stepUpValue;
-    }
-    return false;
   };
 
   const canPlaceShip = (ship, startCord, position) => {
     if (isOffBoard(ship, startCord, position)) {
       return false;
     }
-    if (isOverlappingWithShip(ship, startCord, position)) {
+    if (isAdjacentToOrOverlappingWithShip(startCord)) {
       return false;
     }
     return true;
@@ -210,7 +196,7 @@ const GameBoard = () => {
     hitCords,
     placeShip,
     moveShip,
-    isAdjacentToShip,
+    isAdjacentToOrOverlappingWithShip,
     recieveAttack,
     hitDiagonal,
     hitShipAdjacent,
