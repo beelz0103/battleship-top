@@ -47,7 +47,7 @@ const Ship = (type, hits = 0, sunk = false) => {
   };
 
   const couldNotDeploy = () => {
-    deployed = "failed";
+    deployed = false;
   };
 
   const getCords = () => cord;

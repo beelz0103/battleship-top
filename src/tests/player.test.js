@@ -22,7 +22,7 @@ test("computer changes turn", () => {
   expect(newComputer.getTurn()).toBe(true);
 });
 
-test.skip("player sinks opponents destroyer", () => {
+test("player sinks opponents destroyer", () => {
   const newPlayer = Player("player");
   const newComputer = Player("computer");
   newPlayer.attack(newComputer, 9);

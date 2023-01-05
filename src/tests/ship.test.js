@@ -42,7 +42,7 @@ test("still in dock", () => {
 test("could not deploy", () => {
   const newShip = Ship("CV");
   newShip.couldNotDeploy();
-  expect(newShip.isDeployed()).toBe("failed");
+  expect(newShip.isDeployed()).toBe(false);
 });
 
 test("get ship cords", () => {

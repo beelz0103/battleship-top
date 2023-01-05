@@ -1,47 +1,69 @@
-export function circumIndicesHelper(i) {
+export function getSurroundingIndices(i) {
   const leftColumn = [10, 20, 30, 40, 50, 60, 70, 80];
   const rightColumn = [19, 29, 39, 49, 59, 69, 79, 89];
-  let circumIndices = [];
+
   switch (true) {
     case i === 0:
-      circumIndices = [i, i + 1, i + 10, i + 11];
-      break;
+      return [i, i + 1, i + 10, i + 11];
+
     case i === 9:
-      circumIndices = [i, i - 1, i + 9, i + 10];
-      break;
+      return [i, i - 1, i + 9, i + 10];
+
     case i === 90:
-      circumIndices = [i, i - 10, i + 1, i - 9];
-      break;
+      return [i, i - 10, i + 1, i - 9];
+
     case i === 99:
-      circumIndices = [i, i - 1, i - 10, i - 11];
-      break;
+      return [i, i - 1, i - 10, i - 11];
+
     case i > 0 && i < 9:
-      circumIndices = [i, i + 1, i + 10, i + 11, i + 9, i - 1];
-      break;
+      return [i, i + 1, i + 10, i + 11, i + 9, i - 1];
+
     case i > 90 && i < 99:
-      circumIndices = [i, i - 11, i - 10, i - 9, i + 1, i - 1];
-      break;
+      return [i, i - 11, i - 10, i - 9, i + 1, i - 1];
+
     case leftColumn.includes(i):
-      circumIndices = [i, i - 10, i - 9, i + 1, i + 10, i + 11];
-      break;
+      return [i, i - 10, i - 9, i + 1, i + 10, i + 11];
+
     case rightColumn.includes(i):
-      circumIndices = [i, i - 11, i - 10, i - 1, i + 9, i + 10];
-      break;
+      return [i, i - 11, i - 10, i - 1, i + 9, i + 10];
 
     default:
-      circumIndices = [
-        i,
-        i + 1,
-        i - 1,
-        i + 10,
-        i - 10,
-        i + 11,
-        i - 11,
-        i - 9,
-        i + 9,
-      ];
+      return [i, i + 1, i - 1, i + 10, i - 10, i + 11, i - 11, i - 9, i + 9];
   }
-  return circumIndices;
+}
+
+export function getDiagonalCords(i) {
+  const leftColumn = [10, 20, 30, 40, 50, 60, 70, 80];
+  const rightColumn = [19, 29, 39, 49, 59, 69, 79, 89];
+
+  switch (true) {
+    case i === 0:
+      return [i + 11];
+
+    case i === 9:
+      return [i + 9];
+
+    case i === 90:
+      return [i - 9];
+
+    case i === 99:
+      return [i - 11];
+
+    case i > 0 && i < 9:
+      return [i + 11, i + 9];
+
+    case i > 90 && i < 99:
+      return [i - 11, i - 9];
+
+    case leftColumn.includes(i):
+      return [i - 9, i + 11];
+
+    case rightColumn.includes(i):
+      return [i - 11, i + 9];
+
+    default:
+      return [i + 11, i - 11, i - 9, i + 9];
+  }
 }
 
 export function roundUpNearest10(num) {
@@ -70,4 +92,8 @@ export function increment(position) {
   if (position === "vertical") {
     return 10;
   }
+}
+
+export function structuredClone(array) {
+  return JSON.parse(JSON.stringify(array));
 }

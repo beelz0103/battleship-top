@@ -16,19 +16,19 @@ test("place ship vertically at top-right of the board", () => {
 test("ship can't be placed outside the board 1", () => {
   const board = GameBoard();
   const carrier = Ship("CV");
-  expect(board.placeShip(carrier, 10, "horizontal")).toBe("failed");
+  expect(board.placeShip(carrier, 10, "horizontal")).toBe(false);
 });
 
 test("ship can't be placed outside the board 2", () => {
   const board = GameBoard();
   const battleShip = Ship("BB");
-  expect(board.placeShip(battleShip, 71, "vertical")).toBe("failed");
+  expect(board.placeShip(battleShip, 71, "vertical")).toBe(false);
 });
 
 test("ship can't be placed outside the board 2", () => {
   const board = GameBoard();
   const battleShip = Ship("BB");
-  expect(board.placeShip(battleShip, 67, "horizontal")).not.toBe("failed");
+  expect(board.placeShip(battleShip, 67, "horizontal")).not.toBe(false);
 });
 
 test("doesnt allow overlap of two ships", () => {
@@ -36,7 +36,7 @@ test("doesnt allow overlap of two ships", () => {
   const carrier = Ship("CV");
   const battleShip = Ship("BB");
   board.placeShip(battleShip, 1, "vertical");
-  expect(board.placeShip(carrier, 1, "vertical")).toBe("failed");
+  expect(board.placeShip(carrier, 1, "vertical")).toBe(false);
 });
 
 test("doesnt allow overlap of two ships", () => {
@@ -44,7 +44,7 @@ test("doesnt allow overlap of two ships", () => {
   const carrier = Ship("CV");
   const battleShip = Ship("BB");
   board.placeShip(battleShip, 1, "vertical");
-  expect(board.placeShip(carrier, 21, "horizontal")).toBe("failed");
+  expect(board.placeShip(carrier, 21, "horizontal")).toBe(false);
 });
 
 test("doesnt allow ships to be placed right next to each other", () => {
@@ -52,7 +52,7 @@ test("doesnt allow ships to be placed right next to each other", () => {
   const carrier = Ship("CV");
   const battleShip = Ship("BB");
   board.placeShip(battleShip, 55, "vertical");
-  expect(board.placeShip(carrier, 66, "horizontal")).toBe("failed");
+  expect(board.placeShip(carrier, 66, "horizontal")).toBe(false);
 });
 
 test("doesnt allow ships to be placed right next to each other", () => {
@@ -60,7 +60,7 @@ test("doesnt allow ships to be placed right next to each other", () => {
   const carrier = Ship("CV");
   const battleShip = Ship("BB");
   board.placeShip(battleShip, 35, "horizontal");
-  expect(board.placeShip(carrier, 45, "horizontal")).toBe("failed");
+  expect(board.placeShip(carrier, 45, "horizontal")).toBe(false);
 });
 
 test("hit a ship", () => {
@@ -119,21 +119,6 @@ test("hit same cord twice", () => {
   expect(board.recieveAttack(100)).toBe("h");
 });
 
-test("all ships deployed", () => {
-  const board = GameBoard();
-  const carrier = board.allShips[0];
-  const battleShip = board.allShips[1];
-  const cruiser = board.allShips[2];
-  const submarine = board.allShips[3];
-  const destroyer = board.allShips[4];
-  board.placeShip(carrier, 1, "vertical");
-  board.placeShip(battleShip, 2, "vertical");
-  board.placeShip(cruiser, 3, "vertical");
-  board.placeShip(submarine, 4, "vertical");
-  board.placeShip(destroyer, 5, "vertical");
-  expect(board.allShipsDeployed()).toBe(false);
-});
-
 test("all ships not sunk", () => {
   const board = GameBoard();
   const carrier = board.allShips[0];
@@ -172,7 +157,7 @@ test("checks if circumference function wraps properly", () => {
   const board = GameBoard();
   const carrier = board.allShips[0];
   board.placeShip(carrier, 60, "vertical");
-  expect(board.checkCircumference(60)).toBe(false);
+  expect(board.isAdjacentToOrOverlappingWithShip(61)).toBe(false);
 });
 
 test("checks if hitDiagonal function wraps properly", () => {
@@ -197,7 +182,7 @@ test("hit ships adjacent", () => {
   expect(board.hitShipAdjacent(carrier)).toEqual([50]);
 });
 
-test("hit ships adjacent", () => {
+test("hit ships adjacent 2", () => {
   const board = GameBoard();
   const carrier = board.allShips[0];
   board.placeShip(carrier, 75, "horizontal");
@@ -206,25 +191,9 @@ test("hit ships adjacent", () => {
   board.recieveAttack(78);
   board.recieveAttack(79);
   board.recieveAttack(75);
-  expect(board.hitShipAdjacent(carrier)).toEqual([74, 80]);
-});
-
-test("initiates board", () => {
-  const board = GameBoard();
-  const carrier = board.allShips[0];
-  board.placeShip(carrier, 75, "horizontal");
-  board.initiateBoard();
-  expect(board.getInitiated()).toBe(true);
-});
-
-test("initiates board", () => {
-  const board = GameBoard();
-  const carrier = board.allShips[0];
-  const battleShip = board.allShips[1];
-  board.placeShip(carrier, 75, "horizontal");
-  board.placeShip(battleShip, 75, "horizontal");
-  board.initiateBoard();
-  expect(board.getInitiated()).toBe(false);
+  expect(board.hitShipAdjacent(carrier).sort((a, b) => a - b)).toEqual([
+    74, 80,
+  ]);
 });
 
 test("move ship from one one cord to another", () => {
@@ -250,9 +219,9 @@ test("check if ship was removed from the original location", () => {
   const carrier = board.allShips[0];
   const battleShip = board.allShips[1];
   board.placeShip(carrier, 75, "horizontal");
-  board.placeShip(battleShip, 10, "vertical");
+  board.placeShip(battleShip, 11, "vertical");
   const originalCords = battleShip.getCords();
-  board.moveShip(battleShip, 55, "horizontal");
+  board.moveShip(battleShip, 11, "vertical");
   const originalCordsonBoardAfter = battleShip.getCords();
   expect(originalCordsonBoardAfter).not.toEqual(originalCords);
 });
@@ -279,6 +248,28 @@ test("check if ship was removed from the original location board version", () =>
   expect(originalCordsonBoardAfter).not.toEqual(originalCords);
 });
 
+test("check if ship was rotated 1", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  board.placeShip(carrier, 55, "horizontal");
+  board.moveShip(carrier, 55, "horizontal");
+  const cord2 = carrier.getCords();
+  const cordDiff = cord2[1] - cord2[0];
+  expect(cordDiff).toBe(10);
+});
+
+test("check if ship was rotated 2", () => {
+  const board = GameBoard();
+  const carrier = board.allShips[0];
+  const battleShip = board.allShips[1];
+  board.placeShip(carrier, 75, "horizontal");
+  board.placeShip(battleShip, 11, "vertical");
+  board.moveShip(battleShip, 11, "vertical");
+  const cord2 = battleShip.getCords();
+  const cordDiff = cord2[1] - cord2[0];
+  expect(cordDiff).toBe(1);
+});
+
 test("fail move ship from one one cord to another", () => {
   const board = GameBoard();
   const carrier = board.allShips[0];
@@ -291,7 +282,7 @@ test("fail move ship from one one cord to another", () => {
   board.placeShip(cruiser, 5, "vertical");
   board.placeShip(submarine, 7, "vertical");
   board.placeShip(destroyer, 9, "vertical");
-  expect(board.moveShip(carrier, 22, "horizontal")).toEqual("failed");
+  expect(board.moveShip(carrier, 22, "horizontal")).toEqual(false);
 });
 
 test("fail move ship from one one cord to another", () => {

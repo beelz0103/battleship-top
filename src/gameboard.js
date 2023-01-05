@@ -1,18 +1,17 @@
 import Ship from "./ship";
 import {
-  circumIndicesHelper,
+  getSurroundingIndices,
   lastDigit,
   roundUpNearest10,
   isShip,
   increment,
+  getDiagonalCords,
 } from "./helper";
 
 const GameBoard = () => {
   const gameBoard = [];
   const hitCords = [];
   let lose = false;
-  const turn = 0;
-  const getTruns = () => turn;
   const getLose = () => lose;
   for (let i = 1; i <= 100; i += 1) {
     gameBoard.push(i);
@@ -25,7 +24,7 @@ const GameBoard = () => {
   const destroyer = Ship("DD");
   const allShips = [carrier, battleShip, cruiser, submarine, destroyer];
 
-  const outsideBoard = (ship, startCord, position) => {
+  const isOffBoard = (ship, startCord, position) => {
     if (
       (position === "horizontal" &&
         startCord + ship.getLength() - 1 > roundUpNearest10(startCord)) ||
@@ -38,196 +37,119 @@ const GameBoard = () => {
   };
 
   // returns true if a surrounding cordinate is a ship cordinate
-  const checkCircumference = (index) => {
-    const circumIndices = circumIndicesHelper(index);
-    let i = 0;
-    while (i < circumIndices.length) {
-      if (isShip(gameBoard[circumIndices[i]])) {
-        return true;
-      }
-      i += 1;
-    }
-    return false;
-  };
-
-  const overlaps = (ship, startCord, position) => {
-    const stepUpValue = increment(position);
-    let i = 0;
-    let j = startCord - 1;
-    while (i < ship.getLength()) {
-      if (checkCircumference(j)) {
-        return true;
-      }
-      i += 1;
-      j += stepUpValue;
-    }
-    return false;
+  const isAdjacentToOrOverlappingWithShip = (cord) => {
+    const surroundingIndices = getSurroundingIndices(cord - 1);
+    return surroundingIndices.some((index) => isShip(gameBoard[index]));
   };
 
   const canPlaceShip = (ship, startCord, position) => {
-    if (outsideBoard(ship, startCord, position)) {
+    if (isOffBoard(ship, startCord, position)) {
       return false;
     }
-    if (overlaps(ship, startCord, position)) {
+    if (isAdjacentToOrOverlappingWithShip(startCord)) {
       return false;
     }
     return true;
   };
 
   const placeShip = (ship, startCord, position) => {
-    const shipCords = [];
-
-    if (canPlaceShip(ship, startCord, position)) {
-      const stepUpValue = increment(position);
-      let i = 0;
-      let j = startCord - 1;
-      while (i < ship.getLength()) {
-        gameBoard[j] = ship.type;
-        shipCords.push(j + 1);
-        i += 1;
-        j += stepUpValue;
-      }
-
-      ship.deploy();
-      ship.setCords(shipCords);
-      return ship.isDeployed();
+    if (!canPlaceShip(ship, startCord, position)) {
+      ship.couldNotDeploy();
+      return false;
     }
 
-    ship.couldNotDeploy();
-    return ship.isDeployed();
+    const shipCords = [];
+    const stepUpValue = increment(position);
+    let i = 0;
+    let j = startCord - 1;
+    while (i < ship.getLength()) {
+      gameBoard[j] = ship.type;
+      shipCords.push(j + 1);
+      i += 1;
+      j += stepUpValue;
+    }
+    ship.deploy();
+    ship.setCords(shipCords);
+    return true;
   };
 
-  function structuredClone(array) {
-    return JSON.parse(JSON.stringify(array));
-  }
-
-  function removeShipFromBoardForMoveShip(shipCords) {
+  function removeShipFromBoard(shipCords, ship) {
+    ship.setCords(null);
     shipCords.forEach((value) => {
       gameBoard[value - 1] = value;
     });
   }
 
-  function reverseRemoveShipFromBoardForMoveShip(shipCords, ship) {
+  function unremoveShipFromBoard(shipCords, ship) {
+    ship.setCords(shipCords);
     shipCords.forEach((value) => {
       gameBoard[value - 1] = ship.type;
     });
   }
 
-  const changePosition = (position) => {
-    if (position === "horizontal") {
-      return "vertical";
+  const togglePosition = (startCord, preMoveStartCord, position) => {
+    if (startCord === preMoveStartCord) {
+      return position === "horizontal" ? "vertical" : "horizontal";
     }
-    return "horizontal";
+    return position;
   };
 
   const moveShip = (ship, startCord, position) => {
-    const currentCords = structuredClone(ship.getCords());
-    const currentStartCord = currentCords[0];
-    let isShipMoved;
-    if (startCord === currentStartCord) {
-      // wrtie tests fro this later
-      position = changePosition(position);
-      isShipMoved = placeShip(ship, startCord, position);
-      // wrtie tests fro this later
-    }
-    removeShipFromBoardForMoveShip(currentCords);
-    ship.setCords(null);
-    isShipMoved = placeShip(ship, startCord, position);
-    if (isShipMoved === "failed") {
-      ship.setCords(currentCords);
-      reverseRemoveShipFromBoardForMoveShip(currentCords, ship);
+    const preMoveCords = ship.getCords();
+    const newPosition = togglePosition(startCord, preMoveCords[0], position);
+    removeShipFromBoard(preMoveCords, ship);
+    const isShipMoved = placeShip(ship, startCord, newPosition);
+    if (!isShipMoved) {
+      unremoveShipFromBoard(preMoveCords, ship);
     }
     return isShipMoved;
   };
 
-  const getShipFromSymbol = (symbol) => {
-    let getShip;
-    allShips.forEach((ship) => {
-      if (ship.type === symbol) {
-        getShip = ship;
-      }
-    });
-    return getShip;
-  };
-
-  const alreadyHit = (cord) => {
-    if (hitCords.includes(cord)) {
-      return true;
-    }
-    return false;
-  };
-
-  function getOnlyDiagonalCords(onBoardCord) {
-    const cord = onBoardCord - 1;
-    const exlude = [cord, cord + 1, cord - 1, cord + 10, cord - 10];
-    return circumIndicesHelper(cord).filter((value) => !exlude.includes(value));
-  }
-
   const hitDiagonal = (cord) => {
-    const possibleCords = getOnlyDiagonalCords(cord);
+    const possibleCords = getDiagonalCords(cord - 1);
     possibleCords.forEach((value) => {
       gameBoard[value] = "water";
-      if (!alreadyHit(value + 1)) {
+      if (!hitCords.includes(value + 1)) {
         hitCords.push(value + 1);
       }
     });
     return possibleCords.map((value) => value + 1);
   };
 
-  const allShipsDeployed = () => {
-    for (let i = 0; i < allShips.length; i += 1) {
-      if (allShips[i].isDeployed() === "failed") {
-        return false;
+  function getAllAdjacentCords(ship) {
+    const shipCords = ship.getCords();
+    const adjacentCords = [];
+    for (let i = 0; i < shipCords.length; i += 1) {
+      const surroundingIndices = getSurroundingIndices(shipCords[i] - 1);
+      for (let j = 0; j < surroundingIndices.length; j += 1) {
+        const adjCord = surroundingIndices[j];
+        if (
+          !adjacentCords.includes(adjCord) &&
+          !hitCords.includes(adjCord + 1)
+        ) {
+          adjacentCords.push(adjCord);
+        }
       }
     }
-    return true;
-  };
-
-  function getAllAdjacentCords(ship) {
-    return ship.getCords().reduce((adjacentArray, shipCord) => {
-      circumIndicesHelper(shipCord - 1).forEach((adjCord) => {
-        if (!adjacentArray.includes(adjCord)) adjacentArray.push(adjCord);
-      });
-      return adjacentArray;
-    }, []);
+    return adjacentCords.map((value) => value + 1);
   }
 
   const hitShipAdjacent = (ship) => {
-    if (ship.isSunk()) {
-      const remainingCords = getAllAdjacentCords(ship)
-        .map((value) => value + 1)
-        .filter((value) => !hitCords.includes(value));
-
-      remainingCords.forEach((cord) => {
-        gameBoard[cord - 1] = "water";
-      });
-
-      return remainingCords;
+    if (!ship.isSunk()) {
+      return null;
     }
-    return null;
+    const remainingCords = getAllAdjacentCords(ship);
+    remainingCords.forEach((cord) => {
+      gameBoard[cord - 1] = "water";
+    });
+    return remainingCords;
   };
-
-  let initiated;
-
-  const getInitiated = () => initiated;
-
-  const initiateBoard = () => {
-    if (allShipsDeployed()) {
-      initiated = true;
-    } else {
-      initiated = false;
-    }
-  };
-
-  function noAttack() {
-    return "h";
-  }
 
   function updateShip(hitTarget, cord) {
-    const ship = getShipFromSymbol(hitTarget);
-    ship.hit();
+    const targetShip = allShips.find((ship) => ship.type === hitTarget);
+    targetShip.hit();
     hitDiagonal(cord);
-    hitShipAdjacent(ship);
+    hitShipAdjacent(targetShip);
   }
 
   function attackShip(cord) {
@@ -248,8 +170,8 @@ const GameBoard = () => {
 
   const recieveAttack = (cord) => {
     let hitTarget;
-    if (alreadyHit(cord)) {
-      hitTarget = noAttack();
+    if (hitCords.includes(cord)) {
+      hitTarget = "h";
     } else if (isShip(gameBoard[cord - 1])) {
       hitTarget = attackShip(cord);
     } else {
@@ -268,27 +190,18 @@ const GameBoard = () => {
     return true;
   };
 
-  const getHitCords = () => hitCords;
-
   return {
-    moveShip,
-    canPlaceShip,
     gameBoard,
-    placeShip,
-    recieveAttack,
-    allSunk,
     allShips,
-    allShipsDeployed,
     hitCords,
-    checkCircumference,
+    placeShip,
+    moveShip,
+    isAdjacentToOrOverlappingWithShip,
+    recieveAttack,
     hitDiagonal,
     hitShipAdjacent,
-    getHitCords,
-    getTruns,
-    initiateBoard,
-    getInitiated,
+    allSunk,
     getLose,
-    getShipFromSymbol,
   };
 };
 

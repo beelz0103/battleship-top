@@ -16,9 +16,16 @@ const Game = () => {
     gameDom.showPlayerShips(currentPlayer);
     gameDom.renderBoard(currentOpponent);
     gameDom.setClickEvent(currentOpponent, getMove);
-    // gameDom.toggleClick(currentPlayer, currentOpponent);
+    gameDom.toggleClick(currentOpponent, currentPlayer);
     setClickEvent2(currentPlayer, moveShip);
   };
+
+  document.querySelector("#startGame").addEventListener("click", startGame2);
+
+  function startGame2() {
+    gameDom.toggleClick(currentPlayer, currentOpponent);
+    removeClickEvent2(currentPlayer, moveShip);
+  }
 
   const setClickEvent2 = (player, moveShip) => {
     const squareDivs = document.querySelectorAll(`#${player.player} div`);
