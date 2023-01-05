@@ -1,5 +1,3 @@
-import { isShip } from "./helper";
-
 const GameDom = () => {
   const createDiv = (id, className) => {
     const div = document.createElement("div");
@@ -53,22 +51,22 @@ const GameDom = () => {
   const disableHitCell = (opponent) => {
     if (opponent.player === "player") return;
     const gridCells = document.querySelectorAll(`#${opponent.player} div`);
-    opponent.board.gameBoard.forEach((value, index) => {
-      if (value === "h" || value === "water") {
-        gridCells[index].style.pointerEvents = "none";
+    gridCells.forEach((cell) => {
+      if (cell.textContent !== "") {
+        disablePointerEvent(cell);
       }
     });
   };
 
   const updateBoard = (opponent) => {
-    const squareDivs = document.querySelectorAll(`#${opponent.player} div`);
+    const gridCells = document.querySelectorAll(`#${opponent.player} div`);
     opponent.board.gameBoard.forEach((value, index) => {
       if (value === "h") {
-        squareDivs[index].classList.add("ship");
-        squareDivs[index].textContent = "h";
+        gridCells[index].classList.add("ship");
+        gridCells[index].textContent = "h";
       } else if (value === "water") {
-        squareDivs[index].classList.add("water");
-        squareDivs[index].textContent = "w";
+        gridCells[index].classList.add("water");
+        gridCells[index].textContent = "w";
       }
     });
   };
