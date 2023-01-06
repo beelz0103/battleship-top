@@ -28,7 +28,20 @@ const Ship = (type, hits = 0, sunk = false) => {
   const isDeployed = () => deployed;
   const setCords = (cords) => {
     cord = cords;
+    setPosition(cord); // test this later
   };
+
+  let position = null;
+  // Write tests for this later
+  const setPosition = (cord) => {
+    if (cord === null) {
+      position = null;
+    } else {
+      position = cord[1] - cord[0] === 1 ? "horizontal" : "vertical";
+    }
+  };
+
+  const getPosition = () => position;
 
   const hit = () => {
     if (hits === length) {
@@ -64,6 +77,7 @@ const Ship = (type, hits = 0, sunk = false) => {
     couldNotDeploy,
     getCords,
     setCords,
+    getPosition,
     cord,
   };
 };

@@ -1,26 +1,45 @@
 import Player from "./player";
 import { isShip } from "./helper";
 import GameDom from "./gamedom";
+import MoveShip from "./gamedom_moveship";
 
 const gameDom = GameDom();
+const moveShip = MoveShip(gameDom);
 
 const Game = () => {
   let currentPlayer;
   let currentOpponent;
 
-  const setUpGame = () => {
-    currentPlayer = Player("player");
-    currentOpponent = Player("computer");
+  const enableShipMovement = () => {
+    moveShip.initiate(currentPlayer);
+    gameDom.addMoveListeners(currentPlayer, moveShip.selectShipForMovement);
+  };
+
+  const disableShipMovement = () => {
+    gameDom.removeMoveListeners(currentPlayer, moveShip.selectShipForMovement);
+  };
+
+  const enableAttack = () => {
+    gameDom.addAttackListeners(currentOpponent, getMove);
+  };
+
+  const renderBoards = () => {
     gameDom.renderBoard(currentPlayer);
     gameDom.showPlayerShips(currentPlayer);
     gameDom.renderBoard(currentOpponent);
-    gameDom.addMoveListeners(currentPlayer, moveShip);
+  };
+
+  const setUpGame = () => {
+    currentPlayer = Player("player");
+    currentOpponent = Player("computer");
+    renderBoards();
+    enableShipMovement();
   };
 
   const startGame = () => {
     gameDom.Narrator(`${currentPlayer.player}'s move`);
-    gameDom.addAttackListeners(currentOpponent, getMove);
-    gameDom.removeMoveListeners(currentPlayer, moveShip);
+    enableAttack();
+    disableShipMovement();
     gameDom.disableStartButton(startGame);
   };
 
@@ -28,62 +47,6 @@ const Game = () => {
     setUpGame();
     gameDom.Narrator("Move/Rotate Ships");
     gameDom.enableStartButton(startGame);
-  };
-
-  const moveFune = (shipType) => {
-    const revertStateArray = [];
-    const sqDivs = document.querySelectorAll(`#player div`);
-    const ship = currentPlayer.board.allShips.find(
-      (shp) => shp.type === shipType
-    );
-    const shipIndex = ship.getCords().map((value) => value - 1);
-    let position;
-    console.log(shipIndex);
-    if (shipIndex[1] - shipIndex[0] === 1) {
-      position = "horizontal";
-    } else if (shipIndex[1] - shipIndex[0] === 10) {
-      position = "vertical";
-    }
-    shipIndex.forEach((value, index) => {
-      if (index === 0) {
-        sqDivs[value].textContent = "🗘";
-        revertStateArray.push(value);
-      }
-      sqDivs[value].style.backgroundColor = "#9f5f80";
-      revertStateArray.push(value);
-    });
-    const blah = (e) => {
-      currentPlayer.board.moveShip(ship, parseInt(e.target.id), position);
-      sqDivs.forEach((value) => {
-        value.removeEventListener("click", blah);
-      });
-      revertStateArray.forEach((value) => {
-        sqDivs[value].textContent = "";
-        sqDivs[value].style.backgroundColor = "";
-      });
-      gameDom.addMoveListeners(currentPlayer, moveShip);
-
-      gameDom.showPlayerShips(currentPlayer);
-    };
-
-    sqDivs.forEach((value) => {
-      value.addEventListener("click", blah);
-    });
-  };
-
-  const moveShipHelper = (cord) => {
-    gameDom.removeMoveListeners(currentPlayer, moveShip);
-    const shipType = currentPlayer.board.gameBoard[cord - 1];
-    if (isShip(shipType)) {
-      moveFune(shipType);
-    } else {
-      console.log("this was not a ship");
-      gameDom.addMoveListeners(currentPlayer, moveShip);
-    }
-  };
-
-  const moveShip = (e) => {
-    moveShipHelper(parseInt(e.target.id));
   };
 
   const runGameLoop = (cord = null) => {
@@ -119,11 +82,15 @@ const Game = () => {
     runGameLoop(cord);
   };
 
+  const onGameOver = () => {
+    gameDom.Narrator(`${currentPlayer.player}'s won`);
+    gameDom.disableAllPointerEvents();
+    gameDom.enableRestartButton(restartGame);
+  };
+
   const concludeGame = () => {
     if (currentOpponent.board.getLose()) {
-      gameDom.Narrator(`${currentPlayer.player}'s won`);
-      gameDom.disableAllPointerEvents();
-      gameDom.enableRestartButton(restartGame);
+      onGameOver();
     }
   };
 
@@ -145,10 +112,14 @@ const Game = () => {
     advanceGame(hitTarget);
   };
 
-  const restartGame = () => {
+  const resetBoardState = () => {
     currentPlayer = null;
     currentOpponent = null;
     gameDom.unRenderBoards();
+  };
+
+  const restartGame = () => {
+    resetBoardState();
     play();
     gameDom.disableRestartButton(restartGame);
   };

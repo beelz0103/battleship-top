@@ -115,6 +115,14 @@ const GameDom = () => {
     restartButton.removeEventListener("click", restartGame);
   };
 
+  const enableEvent = (target, f) => {
+    target.addEventListener("click", f);
+  };
+
+  const disableEvent = (target, f) => {
+    target.removeEventListener("click", f);
+  };
+
   const unRenderBoards = () => {
     const mainContainer = document.querySelector(".board-container");
     mainContainer.textContent = "";
@@ -136,6 +144,9 @@ const GameDom = () => {
     enableRestartButton,
     disableRestartButton,
     unRenderBoards,
+    changeBgColor,
+    enableEvent,
+    disableEvent,
   };
 };
 
