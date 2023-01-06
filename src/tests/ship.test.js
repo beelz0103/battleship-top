@@ -1,19 +1,19 @@
 import Ship from "../ship";
 
-test("hit once", () => {
+test("ship gets hit once", () => {
   const newShip = Ship("CV");
   newShip.hit();
   expect(newShip.getHits()).toBe(1);
 });
 
-test("hit twice", () => {
+test("ship gets hit twice", () => {
   const newShip = Ship("CV");
   newShip.hit();
   newShip.hit();
   expect(newShip.getHits()).toBe(2);
 });
 
-test("sunk", () => {
+test("ship sunk", () => {
   const newShip = Ship("CV");
   newShip.hit();
   newShip.hit();
@@ -23,31 +23,47 @@ test("sunk", () => {
   expect(newShip.isSunk()).toBe(true);
 });
 
-test("not sunk", () => {
+test("ship afloat", () => {
   const newShip = Ship("CV");
   expect(newShip.isSunk()).toBe(false);
 });
 
-test("on waters", () => {
+test("ship sortied", () => {
   const newShip = Ship("CV");
   newShip.deploy();
   expect(newShip.isDeployed()).toBe(true);
 });
 
-test("still in dock", () => {
+test("ship is in dock", () => {
   const newShip = Ship("CV");
   expect(newShip.isDeployed()).toBe(false);
 });
 
-test("could not deploy", () => {
+test("ship failed to sortie", () => {
   const newShip = Ship("CV");
   newShip.couldNotDeploy();
   expect(newShip.isDeployed()).toBe(false);
 });
 
-test("get ship cords", () => {
+test("get ship cordinates", () => {
   const newShip = Ship("CV");
   newShip.setCords([1, 2, 3, 4]);
-
   expect(newShip.getCords()).toEqual([1, 2, 3, 4]);
+});
+
+test("ship cordsinates is null when not sortied", () => {
+  const newShip = Ship("CV");
+  expect(newShip.getCords()).toBe(null);
+});
+
+test("ship placed vertically", () => {
+  const newShip = Ship("CV");
+  newShip.setCords([1, 10, 20, 40]);
+  expect(newShip.getPosition()).toBe("vertical");
+});
+
+test("ship placed horizontally", () => {
+  const newShip = Ship("CV");
+  newShip.setCords([1, 2, 3, 4]);
+  expect(newShip.getPosition()).toBe("horizontal");
 });

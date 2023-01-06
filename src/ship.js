@@ -1,7 +1,11 @@
-const Ship = (type, hits = 0, sunk = false) => {
-  let length;
-  let cord = null;
+const Ship = (type) => {
+  let hits = 0;
+  let sunk = false;
   let deployed = false;
+  let length = null;
+  let cord = null;
+  let position = null;
+
   switch (type) {
     case "CV":
       length = 5;
@@ -23,37 +27,31 @@ const Ship = (type, hits = 0, sunk = false) => {
       break;
   }
 
-  const getHits = () => hits;
   const getLength = () => length;
-  const isDeployed = () => deployed;
-  const setCords = (cords) => {
-    cord = cords;
-    setPosition(cord); // test this later
-  };
 
-  let position = null;
-  // Write tests for this later
-  const setPosition = (cord) => {
-    if (cord === null) {
-      position = null;
-    } else {
-      position = cord[1] - cord[0] === 1 ? "horizontal" : "vertical";
-    }
+  const setPosition = () => {
+    if (cord === null) position = null;
+    else position = cord[1] - cord[0] === 1 ? "horizontal" : "vertical";
   };
 
   const getPosition = () => position;
 
-  const hit = () => {
-    if (hits === length) {
-      return;
-    }
-    hits += 1;
-    if (hits === length) {
-      sunk = true;
-    }
+  const setCords = (cords) => {
+    cord = cords;
+    setPosition();
   };
 
+  const getCords = () => cord;
+
   const isSunk = () => sunk;
+
+  const hit = () => {
+    if (isSunk()) return;
+    hits += 1;
+    if (hits === length) sunk = true;
+  };
+
+  const getHits = () => hits;
 
   const deploy = () => {
     deployed = true;
@@ -63,22 +61,20 @@ const Ship = (type, hits = 0, sunk = false) => {
     deployed = false;
   };
 
-  const getCords = () => cord;
+  const isDeployed = () => deployed;
 
   return {
     type,
+    getLength,
     hit,
     getHits,
-    isSunk,
-    getLength,
-    deploy,
-    deployed,
-    isDeployed,
-    couldNotDeploy,
-    getCords,
-    setCords,
     getPosition,
-    cord,
+    setCords,
+    getCords,
+    isSunk,
+    deploy,
+    couldNotDeploy,
+    isDeployed,
   };
 };
 
