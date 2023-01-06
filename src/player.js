@@ -13,11 +13,11 @@ const Player = (player) => {
     const cruiser = board.allShips[2];
     const submarine = board.allShips[3];
     const destroyer = board.allShips[4];
-    board.placeShip(carrier, 15, "horizontal");
-    board.placeShip(battleShip, 55, "horizontal");
-    board.placeShip(cruiser, 13, "vertical");
-    board.placeShip(submarine, 72, "vertical");
-    board.placeShip(destroyer, 85, "vertical");
+    board.placeShip(carrier, 1, "vertical");
+    board.placeShip(battleShip, 3, "vertical");
+    board.placeShip(cruiser, 5, "vertical");
+    board.placeShip(submarine, 7, "vertical");
+    board.placeShip(destroyer, 9, "vertical");
   } else {
     turn = false;
     const carrier = board.allShips[0];
@@ -45,7 +45,8 @@ const Player = (player) => {
   }
 
   const possibleMove = [];
-  for (let i = 1; i < 101; i++) {
+
+  for (let i = 1; i < 101; i += 1) {
     possibleMove.push(i);
   }
 

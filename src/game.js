@@ -9,6 +9,7 @@ const moveShip = MoveShip(gameDom);
 const Game = () => {
   let currentPlayer;
   let currentOpponent;
+  let isOver;
 
   const enableShipMovement = () => {
     moveShip.initiate(currentPlayer);
@@ -53,7 +54,7 @@ const Game = () => {
     if (currentPlayer.player === "player") {
       executePlayerAttack(cord);
     } else {
-      executeComputerAttack(cord);
+      setTimeout(executeComputerAttack, 50);
     }
   };
 
@@ -82,39 +83,39 @@ const Game = () => {
     runGameLoop(cord);
   };
 
-  const onGameOver = () => {
+  const concludeGame = () => {
+    isOver = true;
     gameDom.Narrator(`${currentPlayer.player}'s won`);
     gameDom.disableAllPointerEvents();
     gameDom.enableRestartButton(restartGame);
   };
 
-  const concludeGame = () => {
-    if (currentOpponent.board.getLose()) {
-      onGameOver();
-    }
+  const gameOver = () => {
+    if (currentOpponent.board.getLose()) concludeGame();
   };
 
   const updateGameState = () => {
     gameDom.updateBoard(currentOpponent);
     gameDom.disableHitCell(currentOpponent);
-    concludeGame();
+    gameOver();
   };
 
   const executePlayerAttack = (cord) => {
     const hitTarget = currentPlayer.attack(currentOpponent, cord);
     updateGameState();
-    advanceGame(hitTarget);
+    if (!isOver) advanceGame(hitTarget);
   };
 
   const executeComputerAttack = (cord = null) => {
     const hitTarget = currentPlayer.attack(currentOpponent, cord);
     updateGameState();
-    advanceGame(hitTarget);
+    if (!isOver) advanceGame(hitTarget);
   };
 
   const resetBoardState = () => {
     currentPlayer = null;
     currentOpponent = null;
+    isOver = null;
     gameDom.unRenderBoards();
   };
 
