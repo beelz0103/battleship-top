@@ -1,13 +1,15 @@
 import GameBoard from "./gameboard";
-import Ship from "./ship";
 
 const Player = (player) => {
-  let turn;
   const hitCords = [];
+  const possibleMove = [];
   const board = GameBoard();
 
+  for (let i = 1; i < 101; i += 1) {
+    possibleMove.push(i);
+  }
+
   if (player === "player") {
-    turn = true;
     const carrier = board.allShips[0];
     const battleShip = board.allShips[1];
     const cruiser = board.allShips[2];
@@ -19,7 +21,6 @@ const Player = (player) => {
     board.placeShip(submarine, 7, "vertical");
     board.placeShip(destroyer, 9, "vertical");
   } else {
-    turn = false;
     const carrier = board.allShips[0];
     const battleShip = board.allShips[1];
     const cruiser = board.allShips[2];
@@ -32,24 +33,6 @@ const Player = (player) => {
     board.placeShip(destroyer, 9, "vertical");
   }
 
-  const getTurn = () => turn;
-
-  const changeTurn = () => {
-    turn = !turn;
-  };
-
-  function getRandomInt(minimum, maximum) {
-    const min = Math.ceil(minimum);
-    const max = Math.floor(maximum);
-    return Math.floor(Math.random() * (max - min) + min);
-  }
-
-  const possibleMove = [];
-
-  for (let i = 1; i < 101; i += 1) {
-    possibleMove.push(i);
-  }
-
   function removeItemOnce(arr, value) {
     const index = arr.indexOf(value);
     if (index > -1) {
@@ -57,9 +40,6 @@ const Player = (player) => {
     }
     return arr;
   }
-
-  const numberOfTurns = 0;
-  const getTruns = () => numberOfTurns;
 
   function playerAttacks(opponent, cord) {
     const hitCord = opponent.board.recieveAttack(cord);
@@ -89,7 +69,7 @@ const Player = (player) => {
     return hitCord;
   };
 
-  return { getTurn, changeTurn, attack, board, player, hitCords, getTruns };
+  return { attack, board, player, hitCords };
 };
 
 export default Player;

@@ -1,5 +1,5 @@
 import Player from "./player";
-import { isShip } from "./helper";
+import { increment, isShip } from "./helper";
 import GameDom from "./gamedom";
 import MoveShip from "./gamedom_moveship";
 
@@ -10,6 +10,14 @@ const Game = () => {
   let currentPlayer;
   let currentOpponent;
   let isOver;
+  let turn = 0;
+
+  function incrementTurn() {
+    turn += 1;
+  }
+  function resetTurn() {
+    turn = 0;
+  }
 
   const enableShipMovement = () => {
     moveShip.initiate(currentPlayer);
@@ -51,6 +59,8 @@ const Game = () => {
   };
 
   const runGameLoop = (cord = null) => {
+    incrementTurn();
+    console.log(currentPlayer.player, turn);
     if (currentPlayer.player === "player") {
       executePlayerAttack(cord);
     } else {
@@ -59,6 +69,7 @@ const Game = () => {
   };
 
   const toggleTurn = () => {
+    resetTurn();
     const temp = currentPlayer;
     currentPlayer = currentOpponent;
     currentOpponent = temp;

@@ -1,27 +1,5 @@
 import Player from "../player";
 
-test("player has turn at start", () => {
-  const newPlayer = Player("player");
-  expect(newPlayer.getTurn()).toBe(true);
-});
-
-test("player changes turn", () => {
-  const newPlayer = Player("player");
-  newPlayer.changeTurn();
-  expect(newPlayer.getTurn()).toBe(false);
-});
-
-test("computer does not have turn at start", () => {
-  const newComputer = Player("computer");
-  expect(newComputer.getTurn()).toBe(false);
-});
-
-test("computer changes turn", () => {
-  const newComputer = Player("computer");
-  newComputer.changeTurn();
-  expect(newComputer.getTurn()).toBe(true);
-});
-
 test("player sinks opponents destroyer", () => {
   const newPlayer = Player("player");
   const newComputer = Player("computer");
@@ -54,4 +32,10 @@ test("player attack return value is same as board attack return value", () => {
   const newPlayer = Player("player");
   const newComputer = Player("computer");
   expect(newPlayer.attack(newComputer, 1)).toBe("CV");
+});
+
+test.skip("computer hits random adjacent cordinate if previously hit a ship", () => {
+  const newPlayer = Player("player");
+  const newComputer = Player("computer");
+  expect(newPlayer.attack(newComputer, 1)).toBe(1);
 });
