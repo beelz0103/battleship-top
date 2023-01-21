@@ -3,14 +3,14 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: #eee;
+  font-family: "Montserrat", sans-serif;
 }
 
 .narrator {
   height: 50px;
   font-size: 32px;
-}
-
-button {
+  font-weight: 300;
 }
 
 .board-container {
@@ -25,21 +25,52 @@ button {
   flex-wrap: wrap;
 }
 
+.dimBoard {
+  opacity: 0.5;
+}
+
 .squareDiv {
   box-sizing: border-box;
-  height: 30px;
-  width: 30px;
-  border: 1px solid black;
+  height: 28px;
+  width: 28px;
+  border: 1px solid #393b44;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: inherit;
+  margin-top: 0.5px;
+  margin-bottom: 0.5px;
+  margin-right: 2px;
 }
 
 .ship {
-  background-color: lightpink;
+  background-color: #c86b85;
 }
 
 .water {
-  background-color: lightskyblue;
+  background-color: #bce6eb;
+}
+
+.cross {
+  font-size: 14px;
+}
+
+.dot {
+  font-size: 7px;
+}
+
+.highlight:hover {
+  transform: scale(1.05);
+  border: 1px solid #8db596;
+}
+
+.highlight {
+}
+
+.highlightship {
+  background-color: #8db596;
+}
+
+.high {
+  background-color: #9f5f80;
 }

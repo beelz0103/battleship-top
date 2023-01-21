@@ -1,4 +1,3 @@
-import Ship from "./ship";
 import {
   getSurroundingIndices,
   lastDigit,
@@ -6,23 +5,19 @@ import {
   isShip,
   increment,
   getDiagonalCords,
+  createBoard,
+  buildFleet,
+  integerRange,
+  getRandom,
 } from "./helper";
 
 const GameBoard = () => {
-  const gameBoard = [];
+  const gameBoard = createBoard();
+  const allShips = buildFleet();
   const hitCords = [];
   let lose = false;
-  const getLose = () => lose;
-  for (let i = 1; i <= 100; i += 1) {
-    gameBoard.push(i);
-  }
 
-  const carrier = Ship("CV");
-  const battleShip = Ship("BB");
-  const cruiser = Ship("CA");
-  const submarine = Ship("SS");
-  const destroyer = Ship("DD");
-  const allShips = [carrier, battleShip, cruiser, submarine, destroyer];
+  const getLose = () => lose;
 
   const isOffBoard = (ship, startCord, position) => {
     if (
@@ -108,6 +103,15 @@ const GameBoard = () => {
     return position;
   };
 
+  const canMoveShip = (ship, startCord, position) => {
+    const preMoveCords = ship.getCords();
+    const newPosition = togglePosition(startCord, preMoveCords[0], position);
+    removeShipFromBoard(preMoveCords, ship);
+    const canShipMove = canPlaceShip(ship, startCord, newPosition);
+    unremoveShipFromBoard(preMoveCords, ship);
+    return canShipMove;
+  };
+
   const moveShip = (ship, startCord, position) => {
     const preMoveCords = ship.getCords();
     const newPosition = togglePosition(startCord, preMoveCords[0], position);
@@ -117,6 +121,22 @@ const GameBoard = () => {
       unremoveShipFromBoard(preMoveCords, ship);
     }
     return isShipMoved;
+  };
+
+  function allShipsPlaced() {
+    return allShips.every((value) => value.isDeployed() === true);
+  }
+
+  const placeShipsRandomly = () => {
+    const allCords = integerRange(100);
+    allShips.forEach((ship) => {
+      while (!ship.isDeployed()) {
+        const position = getRandom(["vertical", "horizontal"]);
+        const cordinate = getRandom(allCords);
+        placeShip(ship, cordinate, position);
+      }
+    });
+    return allShipsPlaced();
   };
 
   const hitDiagonal = (cord) => {
@@ -149,9 +169,7 @@ const GameBoard = () => {
   }
 
   const hitShipAdjacent = (ship) => {
-    if (!ship.isSunk()) {
-      return null;
-    }
+    if (!ship.isSunk()) return null;
     const remainingCords = getAllAdjacentCords(ship);
     remainingCords.forEach((cord) => {
       gameBoard[cord - 1] = "water";
@@ -209,7 +227,9 @@ const GameBoard = () => {
     allShips,
     hitCords,
     placeShip,
+    canMoveShip,
     moveShip,
+    placeShipsRandomly,
     isAdjacentToShip,
     recieveAttack,
     hitDiagonal,

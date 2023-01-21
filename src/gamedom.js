@@ -1,3 +1,5 @@
+import { createDot, createX } from "./helper";
+
 const GameDom = () => {
   const createDiv = (id, className) => {
     const div = document.createElement("div");
@@ -52,7 +54,7 @@ const GameDom = () => {
     if (opponent.player === "player") return;
     const gridCells = document.querySelectorAll(`#${opponent.player} div`);
     gridCells.forEach((cell) => {
-      if (cell.textContent !== "") {
+      if (cell.classList[1] === "water" || cell.classList[1] === "ship") {
         disablePointerEvent(cell);
       }
     });
@@ -63,12 +65,23 @@ const GameDom = () => {
     opponent.board.gameBoard.forEach((value, index) => {
       if (value === "h") {
         gridCells[index].classList.add("ship");
-        gridCells[index].textContent = "h";
+        gridCells[index].textContent = "";
+        gridCells[index].appendChild(createX());
+        changeBgColor(gridCells[index], "");
       } else if (value === "water") {
         gridCells[index].classList.add("water");
-        gridCells[index].textContent = "w";
+        gridCells[index].textContent = "";
+        gridCells[index].appendChild(createDot());
       }
     });
+  };
+
+  const dimBoard = (Player, Opponent) => {
+    const playerBoard = document.getElementById(Player.player);
+    const opponentBoard = document.getElementById(Opponent.player);
+
+    playerBoard.classList.add("dimBoard");
+    opponentBoard.classList.remove("dimBoard");
   };
 
   const disablePointerEvent = (cell) => {
@@ -136,6 +149,7 @@ const GameDom = () => {
     addAttackListeners,
     disableHitCell,
     updateBoard,
+    dimBoard,
     showPlayerShips,
     addMoveListeners,
     removeMoveListeners,

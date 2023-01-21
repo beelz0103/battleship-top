@@ -1,5 +1,5 @@
 import Player from "./player";
-import { increment, isShip } from "./helper";
+import { isShip } from "./helper";
 import GameDom from "./gamedom";
 import MoveShip from "./gamedom_moveship";
 
@@ -10,14 +10,6 @@ const Game = () => {
   let currentPlayer;
   let currentOpponent;
   let isOver;
-  let turn = 0;
-
-  function incrementTurn() {
-    turn += 1;
-  }
-  function resetTurn() {
-    turn = 0;
-  }
 
   const enableShipMovement = () => {
     moveShip.initiate(currentPlayer);
@@ -26,6 +18,8 @@ const Game = () => {
 
   const disableShipMovement = () => {
     gameDom.removeMoveListeners(currentPlayer, moveShip.selectShipForMovement);
+    moveShip.resetBoardOnStart();
+    gameDom.showPlayerShips(currentPlayer);
   };
 
   const enableAttack = () => {
@@ -47,6 +41,7 @@ const Game = () => {
 
   const startGame = () => {
     gameDom.Narrator(`${currentPlayer.player}'s move`);
+    gameDom.dimBoard(currentPlayer, currentOpponent);
     enableAttack();
     disableShipMovement();
     gameDom.disableStartButton(startGame);
@@ -59,28 +54,25 @@ const Game = () => {
   };
 
   const runGameLoop = (cord = null) => {
-    incrementTurn();
-    console.log(currentPlayer.player, turn);
     if (currentPlayer.player === "player") {
       executePlayerAttack(cord);
     } else {
-      setTimeout(executeComputerAttack, 50);
+      setTimeout(executeComputerAttack, 1000);
     }
   };
 
   const toggleTurn = () => {
-    resetTurn();
     const temp = currentPlayer;
     currentPlayer = currentOpponent;
     currentOpponent = temp;
     gameDom.Narrator(`${currentPlayer.player}'s move`);
+    gameDom.dimBoard(currentPlayer, currentOpponent);
   };
 
   const turnManager = () => {
+    gameDom.toggleClick(currentPlayer, currentOpponent);
     if (currentPlayer.player !== "player") {
       runGameLoop();
-    } else {
-      gameDom.toggleClick(currentPlayer, currentOpponent);
     }
   };
 

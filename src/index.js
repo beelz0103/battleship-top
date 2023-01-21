@@ -1,8 +1,7 @@
 import "./style.css";
-
-import Player from "./player";
-import GameBoard from "./gameboard";
-import Ship from "./ship";
+import "@fortawesome/fontawesome-free/css/fontawesome.css";
+import "@fortawesome/fontawesome-free/css/solid.css";
+import "@fortawesome/fontawesome-free/css/brands.css";
 import Game from "./game";
 
 const game = Game();

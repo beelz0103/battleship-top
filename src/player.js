@@ -1,63 +1,25 @@
 import GameBoard from "./gameboard";
+import { getRandom, removeItemOnce, possibleMoves } from "./helper";
 
 const Player = (player) => {
   const hitCords = [];
-  const possibleMove = [];
+  const possibleMove = possibleMoves();
   const board = GameBoard();
+  board.placeShipsRandomly();
 
-  for (let i = 1; i < 101; i += 1) {
-    possibleMove.push(i);
-  }
-
-  if (player === "player") {
-    const carrier = board.allShips[0];
-    const battleShip = board.allShips[1];
-    const cruiser = board.allShips[2];
-    const submarine = board.allShips[3];
-    const destroyer = board.allShips[4];
-    board.placeShip(carrier, 1, "vertical");
-    board.placeShip(battleShip, 3, "vertical");
-    board.placeShip(cruiser, 5, "vertical");
-    board.placeShip(submarine, 7, "vertical");
-    board.placeShip(destroyer, 9, "vertical");
-  } else {
-    const carrier = board.allShips[0];
-    const battleShip = board.allShips[1];
-    const cruiser = board.allShips[2];
-    const submarine = board.allShips[3];
-    const destroyer = board.allShips[4];
-    board.placeShip(carrier, 1, "vertical");
-    board.placeShip(battleShip, 3, "vertical");
-    board.placeShip(cruiser, 5, "vertical");
-    board.placeShip(submarine, 7, "vertical");
-    board.placeShip(destroyer, 9, "vertical");
-  }
-
-  function removeItemOnce(arr, value) {
-    const index = arr.indexOf(value);
-    if (index > -1) {
-      arr.splice(index, 1);
-    }
-    return arr;
-  }
-
-  function playerAttacks(opponent, cord) {
+  const playerAttacks = (opponent, cord) => {
     const hitCord = opponent.board.recieveAttack(cord);
     return hitCord;
-  }
+  };
 
-  function getRandom(array) {
-    return array[Math.floor(Math.random() * possibleMove.length)];
-  }
-
-  function computerAttacks(opponent) {
+  const computerAttacks = (opponent) => {
     const cord = getRandom(possibleMove);
     const hitCord = opponent.board.recieveAttack(cord);
     opponent.board.hitCords.forEach((value) => {
       removeItemOnce(possibleMove, value);
     });
     return hitCord;
-  }
+  };
 
   const attack = (opponent, cord = null) => {
     let hitCord;

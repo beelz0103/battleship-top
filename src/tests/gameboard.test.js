@@ -330,3 +330,8 @@ test("fail move ship from one one cord to another", () => {
   });
   expect(originalCordsAfter).toEqual(originalCords);
 });
+
+test("placed ships randomly on board", () => {
+  const board = GameBoard();
+  expect(board.placeShipsRandomly()).toBe(true);
+});
