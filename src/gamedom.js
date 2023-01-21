@@ -23,8 +23,11 @@ const GameDom = () => {
     const subContainer = createDiv(`${player}-sub-container`, "sub-container");
     const board = createDiv(player, "board");
     const shipContainer = createDiv(`${player}-ships`, "board");
+    const displayPlayer = createDiv(`${player}-name`, "displayPlayer");
+    displayPlayer.textContent = `${Player.player} board`;
     populateBoard(board);
     subContainer.appendChild(board);
+    subContainer.appendChild(displayPlayer);
     subContainer.appendChild(shipContainer);
     mainContainer.appendChild(subContainer);
   };

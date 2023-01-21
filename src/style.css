@@ -1,32 +1,108 @@
+@font-face {
+  font-family: "MyFont";
+  src: url("./assets/Montserrat/Montserrat-VariableFont_wght.ttf"),
+    url("./assets/Montserrat/Montserrat-Italic-VariableFont_wght.ttf");
+}
+
 body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: grid;
+  background-color: #eee;
+  font-family: "MyFont";
+  grid-template-columns: 1fr;
+  grid-template-rows: 70px 1fr 40px;
+}
+
+#header {
+  font-size: 2rem;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+#footer {
+  display: flex;
+  font-size: 1.2rem;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+}
+
+#content {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background-color: #eee;
-  font-family: "Montserrat", sans-serif;
+}
+
+.narrator-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f4f4f4;
+  height: 2rem;
+  width: 15rem;
+  border: 1px solid #333;
+  border-radius: 0.2rem;
+  margin: 10px;
 }
 
 .narrator {
-  height: 50px;
-  font-size: 32px;
+  font-size: 1.2rem;
   font-weight: 300;
+}
+
+button {
+  width: 70px;
+  height: 25px;
+}
+
+button:hover:enabled {
+  cursor: pointer;
 }
 
 .board-container {
   display: flex;
+  flex: 1;
+}
+
+.sub-container {
+  display: grid;
+  grid-template-rows: 330px 1fr;
+  grid-template-columns: 1fr 1fr;
+}
+
+#player {
+  grid-area: 1/2/2/-1;
+}
+
+#player-name {
+  grid-area: 2/2/-1/-1;
+}
+
+#player-ships {
+  grid-area: 1/1/-1/2;
+}
+
+#computer {
+  grid-area: 1/1/2/2;
+}
+
+#computer-name {
+  grid-area: 2/1/-1/2;
+}
+
+#computer-ships {
+  grid-area: 1/2/-1/-1;
 }
 
 .board {
-  margin: 20px;
+  margin: 20px 20px 10px 20px;
   height: 300px;
   width: 300px;
   display: flex;
   flex-wrap: wrap;
-}
-
-.dimBoard {
-  opacity: 0.5;
 }
 
 .squareDiv {
@@ -48,38 +124,38 @@ body {
   border: 1px solid #8db596;
 }
 
-button:hover:enabled {
-  cursor: pointer;
+.displayPlayer {
+  text-align: center;
+  height: 20px;
+}
+/*change this later if you decide to write the code for this*/
+#computer-ships,
+#player-ships {
+  height: 0px;
+  width: 0px;
+  margin: 0;
 }
 
-.ship {
-  background-color: #c86b85;
-}
-
-.water {
-  background-color: #bce6eb;
-}
-
-.cross {
-  font-size: 14px;
-}
-
-.dot {
-  font-size: 7px;
-}
-
-.highlight:hover {
-  transform: scale(1.05);
-  border: 1px solid #8db596;
-}
-
-.highlight {
+.dimBoard {
+  opacity: 0.5;
 }
 
 .highlightship {
   background-color: #8db596;
 }
 
-.high {
-  background-color: #9f5f80;
+.water {
+  background-color: #bce6eb;
+}
+
+.ship {
+  background-color: #c86b85;
+}
+
+.dot {
+  font-size: 7px;
+}
+
+.cross {
+  font-size: 14px;
 }
