@@ -79,7 +79,6 @@ const GameDom = () => {
   const dimBoard = (Player, Opponent) => {
     const playerBoard = document.getElementById(Player.player);
     const opponentBoard = document.getElementById(Opponent.player);
-
     playerBoard.classList.add("dimBoard");
     opponentBoard.classList.remove("dimBoard");
   };
@@ -109,22 +108,27 @@ const GameDom = () => {
   };
 
   const enableStartButton = (startGame) => {
+    disableRestartButton(restartGame);
     const startButton = document.querySelector("#startGame");
+    startButton.disabled = false;
     startButton.addEventListener("click", startGame);
   };
 
   const disableStartButton = (startGame) => {
     const startButton = document.querySelector("#startGame");
+    startButton.disabled = true;
     startButton.removeEventListener("click", startGame);
   };
 
   const enableRestartButton = (restartGame) => {
     const restartButton = document.querySelector("#restartGame");
+    restartButton.disabled = false;
     restartButton.addEventListener("click", restartGame);
   };
 
   const disableRestartButton = (restartGame) => {
     const restartButton = document.querySelector("#restartGame");
+    restartButton.disabled = true;
     restartButton.removeEventListener("click", restartGame);
   };
 

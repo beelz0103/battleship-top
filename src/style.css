@@ -43,6 +43,15 @@ body {
   margin-right: 2px;
 }
 
+.squareDiv:hover {
+  cursor: pointer;
+  border: 1px solid #8db596;
+}
+
+button:hover:enabled {
+  cursor: pointer;
+}
+
 .ship {
   background-color: #c86b85;
 }

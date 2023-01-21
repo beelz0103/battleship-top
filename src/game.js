@@ -57,7 +57,7 @@ const Game = () => {
     if (currentPlayer.player === "player") {
       executePlayerAttack(cord);
     } else {
-      setTimeout(executeComputerAttack, 1000);
+      setTimeout(executeComputerAttack, 0);
     }
   };
 
